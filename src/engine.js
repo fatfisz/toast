@@ -15,7 +15,7 @@ export function startGameLoop({ gui, toast }) {
     requestAnimationFrame(draw);
 
     const skipFrame = lastNow === null;
-    const dt = Math.max(now - lastNow, maxFrameDuration);
+    const dt = Math.min(now - lastNow, maxFrameDuration);
     lastNow = now;
 
     if (skipFrame) {
