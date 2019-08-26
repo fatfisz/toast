@@ -1,32 +1,35 @@
 import Display from './Display';
+import { initMouseEvents } from './mouse';
 
-/** @type {HTMLCanvasElement} */
-const canvas = document.getElementById('canvas');
-const display = new Display(canvas);
+// Prevent things going stupid when the tab is switched
+const maxFrameDuration = 20;
 
 export function startGameLoop({ gui, toast }) {
+  /** @type {HTMLCanvasElement} */
+  const canvas = document.getElementById('canvas');
+  const display = new Display(canvas);
+  initMouseEvents(canvas, toast);
   let lastNow = null;
 
   function draw(now) {
     requestAnimationFrame(draw);
-    display.ensureResized();
 
     const skipFrame = lastNow === null;
-    const dt = now - lastNow;
+    const dt = Math.max(now - lastNow, maxFrameDuration);
     lastNow = now;
 
     if (skipFrame) {
       return;
     }
 
-    display.context.clearRect(0, 0, display.width, display.height);
+    display.clear();
 
     toast.tick(dt);
+    toast.ensureWithinWalls();
     toast.draw(display);
 
     gui.updateDisplay();
   }
 
-  display.setUpResizeListener();
   requestAnimationFrame(draw);
 }
