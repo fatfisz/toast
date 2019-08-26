@@ -1,6 +1,6 @@
-const height = 15;
+const height = 20;
 const width = 200;
-const butterHeight = 1.5;
+const butterHeight = 5;
 const butterWidth = width * 0.9;
 const toastInertia = 1 / (width * height);
 const barrierPosition = 200;
