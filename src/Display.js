@@ -34,10 +34,6 @@ export default class Display {
     }
   }
 
-  resetTransform() {
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
-  }
-
   clear() {
     this.context.clearRect(0, 0, width, height);
   }
