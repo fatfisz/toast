@@ -1,4 +1,4 @@
-const mouseMemoryThreshold = 300;
+const mouseMemoryThreshold = 120;
 
 export default class Mouse {
   /** @param display {import('./Display').default} */
