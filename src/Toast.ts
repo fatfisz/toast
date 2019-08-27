@@ -1,34 +1,42 @@
-import { add, distance, intersection, rotate, scale, sub } from './2d';
+import Display from './Display';
+import Point from './Point';
 
 const height = 20;
 const width = 200;
 const butterHeight = 5;
 const butterWidth = width * 0.9;
+const gravity = 1;
+const gravityFactor = 0.01;
 const forceScale = 0.001;
 const toastInertia = 1 / 4200;
 const barrierPosition = 200;
 const barrierForce = 0.01;
 
 const toastPoints = [
-  [-width / 2, -height / 2],
-  [-width / 2, height / 2],
-  [width / 2, height / 2],
-  [width / 2, -height / 2],
+  new Point(-width / 2, -height / 2),
+  new Point(-width / 2, height / 2),
+  new Point(width / 2, height / 2),
+  new Point(width / 2, -height / 2),
 ];
 
 const butterPoints = [
-  [-butterWidth / 2, -height / 2 - butterHeight],
-  [-butterWidth / 2, -height / 2],
-  [butterWidth / 2, -height / 2],
-  [butterWidth / 2, -height / 2 - butterHeight],
+  new Point(-butterWidth / 2, -height / 2 - butterHeight),
+  new Point(-butterWidth / 2, -height / 2),
+  new Point(butterWidth / 2, -height / 2),
+  new Point(butterWidth / 2, -height / 2 - butterHeight),
 ];
 
 export default class Toast {
-  /** @param display {import('./Display').default} */
-  constructor(display, x = 0, y = 0) {
+  display: Display;
+  position: Point;
+  r: number;
+  dx: number;
+  dy: number;
+  dr: number;
+
+  constructor(display: Display, x = 0, y = 0) {
     this.display = display;
-    this.x = x;
-    this.y = y;
+    this.position = new Point(x, y);
     this.r = 0.4;
     this.dx = 0.1;
     this.dy = 0;
@@ -40,9 +48,8 @@ export default class Toast {
     this.drawButter();
   }
 
-  getTransformedPoints(points) {
-    const midPoint = this.getMidPoint();
-    return points.map(point => add(rotate(point, this.r), midPoint));
+  getTransformedPoints(points: Point[]) {
+    return points.map(point => point.rotate(this.r).add(this.position));
   }
 
   drawToast() {
@@ -63,38 +70,38 @@ export default class Toast {
     });
   }
 
-  tick(dt) {
-    this.x += this.dx * dt;
-    this.y += this.dy * dt;
+  tick(dt: number) {
+    this.position.x += this.dx * dt;
+    this.position.y += this.dy * dt;
     this.r += this.dr * dt;
-
-    this.dy -= this.y * dt * 0.000001;
 
     const dampeningFactor = 1 - dt ** -Math.E;
     this.dx *= dampeningFactor;
     this.dy *= dampeningFactor;
     this.dr *= dampeningFactor;
+
+    this.dy = this.dy * (1 - gravityFactor) + gravity * gravityFactor;
   }
 
-  applyForce(point, force) {
-    this.dx += force[0];
-    this.dy += force[1];
-    this.dr += (point[0] * force[1] - point[1] * force[0]) * toastInertia;
+  applyForce({ x, y }: Point, { x: fx, y: fy }: Point) {
+    this.dx += fx;
+    this.dy += fy;
+    this.dr += (x * fy - y * fx) * toastInertia;
   }
 
   ensureWithinWalls() {
-    if (Math.abs(this.x) > barrierPosition) {
-      this.dx += barrierForce * -Math.sign(this.x);
+    if (Math.abs(this.position.x) > barrierPosition) {
+      this.dx += barrierForce * -Math.sign(this.position.x);
     }
   }
 
-  getMidPoint() {
-    return [this.display.width / 2 + this.x, this.display.height / 2 + this.y];
-  }
+  tryApplyForce(forceVector: [Point, Point] | null) {
+    if (forceVector === null) {
+      return false;
+    }
 
-  tryApplyForce([firstPoint, lastPoint]) {
-    const midPoint = this.getMidPoint();
-    const firstPointIsInside = this.getIntersection(midPoint, firstPoint) === null;
+    const [firstPoint, lastPoint] = forceVector;
+    const firstPointIsInside = this.getIntersection(this.position, firstPoint) === null;
 
     if (firstPointIsInside) {
       return false;
@@ -105,14 +112,14 @@ export default class Toast {
       return false;
     }
 
-    const force = scale(sub(forcePoint, firstPoint), forceScale);
-    const normalizedForcePoint = sub(forcePoint, midPoint);
+    const force = forcePoint.sub(firstPoint).scale(forceScale);
+    const normalizedForcePoint = forcePoint.sub(this.position);
     this.applyForce(normalizedForcePoint, force);
 
     return true;
   }
 
-  getIntersection(firstPoint, lastPoint) {
+  getIntersection(firstPoint: Point, lastPoint: Point) {
     const points = this.getTransformedPoints(toastPoints);
     points.push(points[0]);
 
@@ -120,14 +127,14 @@ export default class Toast {
     const lastDistance = Infinity;
 
     for (let index = 0; index < points.length - 1; index += 1) {
-      const maybeIntersection = intersection(
+      const maybeIntersection = Point.intersection(
         firstPoint,
         lastPoint,
         points[index],
         points[index + 1],
       );
       if (maybeIntersection !== null) {
-        const currentDistance = distance(firstPoint, maybeIntersection);
+        const currentDistance = firstPoint.distance(maybeIntersection);
         if (currentDistance < lastDistance) {
           nearestIntersection = maybeIntersection;
         }
