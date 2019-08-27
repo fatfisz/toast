@@ -1,5 +1,7 @@
 'use strict';
 
+const webpack = require('webpack');
+
 module.exports = {
   devServer: {
     open: true,
@@ -12,13 +14,15 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-typescript'],
-          },
         },
       },
     ],
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('development'),
+    }),
+  ],
   resolve: {
     extensions: ['.ts', '.js'],
   },

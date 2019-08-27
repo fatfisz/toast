@@ -9,7 +9,7 @@ const maxFrameDuration = 20;
 
 type Options = {
   display: Display;
-  gui: GUI;
+  gui?: GUI;
   mouse: Mouse;
   toast: Toast;
 };
@@ -41,7 +41,9 @@ export function startGameLoop({ display, gui, mouse, toast }: Options) {
     mouse.tick(now);
     mouse.draw();
 
-    gui.updateDisplay();
+    if (process.env.NODE_ENV !== 'production' && gui) {
+      gui.updateDisplay();
+    }
   }
 
   requestAnimationFrame(draw);
