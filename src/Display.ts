@@ -37,14 +37,20 @@ export default class Display {
     return mid.sub(this.camera);
   }
 
-  lines([firstPoint, ...rest]: Point[], options: Partial<CanvasRenderingContext2D>) {
+  getTransformedPoint(point: Point, z: number) {
+    return point
+      .sub(this.camera)
+      .scale(z)
+      .add(mid);
+  }
+
+  lines([firstPoint, ...rest]: Point[], options: Partial<CanvasRenderingContext2D>, z: number = 1) {
     Object.assign(this.context, defaultOptions, options);
 
-    const offset = this.getOffset();
     this.context.beginPath();
-    this.context.moveTo(...firstPoint.add(offset).toArgs());
+    this.context.moveTo(...this.getTransformedPoint(firstPoint, z).toArgs());
     for (const point of rest) {
-      this.context.lineTo(...point.add(offset).toArgs());
+      this.context.lineTo(...this.getTransformedPoint(point, z).toArgs());
     }
     this.context.closePath();
 

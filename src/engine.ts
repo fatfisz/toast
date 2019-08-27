@@ -9,14 +9,14 @@ import Toast from './Toast';
 const maxFrameDuration = 20;
 
 type Options = {
-  airFlow: AirFlow;
+  airFlows: AirFlow[];
   display: Display;
   gui?: GUI;
   mouse: Mouse;
   toast: Toast;
 };
 
-export function startGameLoop({ airFlow, display, gui, mouse, toast }: Options) {
+export function startGameLoop({ airFlows, display, gui, mouse, toast }: Options) {
   mouse.init();
   let lastNow = 0;
   let skipFrame = true;
@@ -39,7 +39,9 @@ export function startGameLoop({ airFlow, display, gui, mouse, toast }: Options) 
     toast.ensureWithinWalls();
     display.trackToast(toast);
 
-    airFlow.draw();
+    for (const airFlow of airFlows) {
+      airFlow.draw();
+    }
     toast.draw();
 
     mouse.tick(now);

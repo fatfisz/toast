@@ -6,11 +6,15 @@ import Toast from './Toast';
 
 const display = new Display();
 const toast = new Toast(display);
-const airFlow = new AirFlow(display, toast);
+const airFlows = [
+  new AirFlow(display, toast),
+  new AirFlow(display, toast, 2),
+  new AirFlow(display, toast, 3),
+];
 const mouse = new Mouse(display, toast);
 
 if (process.env.NODE_ENV === 'production') {
-  startGameLoop({ airFlow, display, mouse, toast });
+  startGameLoop({ airFlows, display, mouse, toast });
 } else {
-  startGameLoop({ airFlow, display, mouse, toast, gui: require('./gui').getGui(toast) });
+  startGameLoop({ airFlows, display, mouse, toast, gui: require('./gui').getGui(toast) });
 }
