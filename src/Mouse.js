@@ -102,6 +102,7 @@ export default class Mouse {
   }
 
   draw() {
+    // This is only for debugging
     if (this.points.size === 0) {
       return;
     }
