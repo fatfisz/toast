@@ -1,9 +1,9 @@
 import Point from './Point';
+import Toast from './Toast';
 
 const width = 900;
 const height = 1600;
-const midX = width / 2;
-const midY = height / 2;
+const mid = new Point(width / 2, height / 2);
 
 const defaultOptions = {
   lineJoin: 'round',
@@ -17,6 +17,7 @@ export default class Display {
   context: CanvasRenderingContext2D;
   width: number;
   height: number;
+  camera: Point;
 
   constructor() {
     this.canvas = canvas;
@@ -25,20 +26,28 @@ export default class Display {
     this.context = canvas.getContext('2d') as CanvasRenderingContext2D;
     this.width = width;
     this.height = height;
+    this.camera = new Point(0, 0);
   }
 
-  trackPoint({ x, y }: Point) {
-    console.log(x, y);
+  trackToast(toast: Toast) {
+    this.camera.y = toast.position.y;
   }
 
-  lines([{ x, y }, ...rest]: Point[], options: Partial<CanvasRenderingContext2D>) {
+  getOffset() {
+    return mid.sub(this.camera);
+  }
+
+  lines([firstPoint, ...rest]: Point[], options: Partial<CanvasRenderingContext2D>) {
     Object.assign(this.context, defaultOptions, options);
+
+    const offset = this.getOffset();
     this.context.beginPath();
-    this.context.moveTo(x + midX, y + midY);
-    for (const { x, y } of rest) {
-      this.context.lineTo(x + midX, y + midY);
+    this.context.moveTo(...firstPoint.add(offset).toArgs());
+    for (const point of rest) {
+      this.context.lineTo(...point.add(offset).toArgs());
     }
     this.context.closePath();
+
     if (options.fillStyle) {
       this.context.fill();
     }

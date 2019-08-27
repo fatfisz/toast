@@ -7,6 +7,10 @@ export default class Point {
     this.y = y;
   }
 
+  toArgs(): [number, number] {
+    return [this.x, this.y];
+  }
+
   add({ x, y }: Point) {
     return new Point(this.x + x, this.y + y);
   }

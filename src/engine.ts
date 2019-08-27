@@ -1,5 +1,6 @@
 import { GUI } from 'dat.gui';
 
+import AirFlow from './AirFlow';
 import Display from './Display';
 import Mouse from './Mouse';
 import Toast from './Toast';
@@ -8,13 +9,14 @@ import Toast from './Toast';
 const maxFrameDuration = 20;
 
 type Options = {
+  airFlow: AirFlow;
   display: Display;
   gui?: GUI;
   mouse: Mouse;
   toast: Toast;
 };
 
-export function startGameLoop({ display, gui, mouse, toast }: Options) {
+export function startGameLoop({ airFlow, display, gui, mouse, toast }: Options) {
   mouse.init();
   let lastNow = 0;
   let skipFrame = true;
@@ -35,7 +37,9 @@ export function startGameLoop({ display, gui, mouse, toast }: Options) {
 
     toast.tick(dt);
     toast.ensureWithinWalls();
-    display.trackPoint(toast.position);
+    display.trackToast(toast);
+
+    airFlow.draw();
     toast.draw();
 
     mouse.tick(now);
