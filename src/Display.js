@@ -2,8 +2,9 @@ const width = 900;
 const height = 1600;
 
 export default class Display {
-  /** @param canvas {HTMLCanvasElement} */
-  constructor(canvas) {
+  constructor() {
+    /** @type {HTMLCanvasElement} */
+    const canvas = document.getElementById('canvas');
     this.canvas = canvas;
     this.canvas.width = width;
     this.canvas.height = height;

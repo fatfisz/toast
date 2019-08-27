@@ -1,8 +1,11 @@
+import { add, distance, intersection, rotate, scale, sub } from './2d';
+
 const height = 20;
 const width = 200;
 const butterHeight = 5;
 const butterWidth = width * 0.9;
-const toastInertia = 1 / (width * height);
+const forceScale = 0.001;
+const toastInertia = 1 / 4200;
 const barrierPosition = 200;
 const barrierForce = 0.01;
 
@@ -20,36 +23,31 @@ const butterPoints = [
   [butterWidth / 2, -height / 2 - butterHeight],
 ];
 
-function getRotatedPoint(x, y, r) {
-  return [x * Math.cos(r) - y * Math.sin(r), x * Math.sin(r) + y * Math.cos(r)];
-}
-
-function getRotatedPoints(points, r) {
-  return points.map(([x, y]) => getRotatedPoint(x, y, r));
-}
-
 export default class Toast {
-  constructor(x = 0, y = 0) {
+  /** @param display {import('./Display').default} */
+  constructor(display, x = 0, y = 0) {
+    this.display = display;
     this.x = x;
     this.y = y;
     this.r = 0.4;
     this.dx = 0.1;
     this.dy = 0;
-    this.dr = 0.005;
+    this.dr = 0.01;
   }
 
-  /** @param display {import('./Display').default} */
-  draw(display) {
-    display.context.translate(display.width / 2 + this.x, display.height / 2 + this.y);
-
-    this.drawToast(display);
-    this.drawButter(display);
-
-    display.context.resetTransform();
+  draw() {
+    this.drawToast();
+    this.drawButter();
   }
 
-  drawToast({ context }) {
-    const points = getRotatedPoints(toastPoints, this.r);
+  getTransformedPoints(points) {
+    const midPoint = this.getMidPoint();
+    return points.map(point => add(rotate(point, this.r), midPoint));
+  }
+
+  drawToast() {
+    const { context } = this.display;
+    const points = this.getTransformedPoints(toastPoints);
     context.beginPath();
     context.fillStyle = 'rgba(195, 134, 68, 1)';
     context.strokeStyle = 'rgba(195, 134, 68, 1)';
@@ -64,8 +62,9 @@ export default class Toast {
     context.stroke();
   }
 
-  drawButter({ context }) {
-    const points = getRotatedPoints(butterPoints, this.r);
+  drawButter() {
+    const { context } = this.display;
+    const points = this.getTransformedPoints(butterPoints);
     context.beginPath();
     context.fillStyle = 'rgba(248, 239, 204, 1)';
     context.strokeStyle = 'rgba(248, 239, 204, 1)';
@@ -87,56 +86,70 @@ export default class Toast {
 
     this.dy -= this.y * dt * 0.000001;
 
-    const dampeningFactor = 1 - dt ** -3;
+    const dampeningFactor = 1 - dt ** -Math.E;
     this.dx *= dampeningFactor;
     this.dy *= dampeningFactor;
     this.dr *= dampeningFactor;
   }
 
-  getWallForcePosition(fr) {
-    const rotatedPoints = getRotatedPoints(toastPoints, this.r - fr);
-    const rotatedFx = Math.max(
-      rotatedPoints[0][0],
-      rotatedPoints[1][0],
-      rotatedPoints[2][0],
-      rotatedPoints[3][0],
-    );
-    let sumY = 0;
-    let count = 0;
-
-    for (const point of rotatedPoints) {
-      if (point[0] === rotatedFx) {
-        sumY += point[1];
-        count += 1;
-      }
-    }
-
-    const rotatedFy = sumY / count;
-    return getRotatedPoint(rotatedFx, rotatedFy, fr);
-  }
-
-  applyWallForce(f, fr) {
-    const fx = f * -Math.cos(fr);
-    const fy = f * -Math.sin(fr);
-
-    this.dx += fx;
-    this.dy += fy;
-
-    const [wx, wy] = this.getWallForcePosition(fr);
-
-    this.dr += (wx * fy - wy * fx) * toastInertia;
-  }
-
-  applyBarrierForce(f, fr) {
-    const fx = f * -Math.cos(fr);
-
-    this.dx += fx;
+  applyForce(point, force) {
+    this.dx += force[0];
+    this.dy += force[1];
+    this.dr += (point[0] * force[1] - point[1] * force[0]) * toastInertia;
   }
 
   ensureWithinWalls() {
     if (Math.abs(this.x) > barrierPosition) {
-      const direction = this.x > 0 ? 0 : Math.PI;
-      this.applyBarrierForce(barrierForce, direction);
+      this.dx += barrierForce * -Math.sign(this.x);
     }
+  }
+
+  getMidPoint() {
+    return [this.display.width / 2 + this.x, this.display.height / 2 + this.y];
+  }
+
+  tryApplyForce([firstPoint, lastPoint]) {
+    const midPoint = this.getMidPoint();
+    const firstPointIsInside = this.getIntersection(midPoint, firstPoint) === null;
+
+    if (firstPointIsInside) {
+      return false;
+    }
+
+    const forcePoint = this.getIntersection(firstPoint, lastPoint);
+    if (forcePoint === null) {
+      return false;
+    }
+
+    const force = scale(sub(forcePoint, firstPoint), forceScale);
+    const normalizedForcePoint = sub(forcePoint, midPoint);
+    this.applyForce(normalizedForcePoint, force);
+
+    return true;
+  }
+
+  getIntersection(firstPoint, lastPoint) {
+    const points = this.getTransformedPoints(toastPoints);
+    points.push(points[0]);
+
+    let nearestIntersection = null;
+    const lastDistance = Infinity;
+
+    for (let index = 0; index < points.length - 1; index += 1) {
+      const maybeIntersection = intersection(
+        firstPoint,
+        lastPoint,
+        points[index],
+        points[index + 1],
+      );
+      if (maybeIntersection !== null) {
+        const currentDistance = distance(firstPoint, maybeIntersection);
+        if (currentDistance < lastDistance) {
+          nearestIntersection = maybeIntersection;
+        }
+      }
+    }
+
+    return nearestIntersection;
   }
 }
