@@ -46,37 +46,21 @@ export default class Toast {
   }
 
   drawToast() {
-    const { context } = this.display;
     const points = this.getTransformedPoints(toastPoints);
-    context.beginPath();
-    context.fillStyle = 'rgba(195, 134, 68, 1)';
-    context.strokeStyle = 'rgba(195, 134, 68, 1)';
-    context.lineWidth = 3;
-    context.lineJoin = 'round';
-    context.moveTo(points[0][0], points[0][1]);
-    context.lineTo(points[1][0], points[1][1]);
-    context.lineTo(points[2][0], points[2][1]);
-    context.lineTo(points[3][0], points[3][1]);
-    context.closePath();
-    context.fill();
-    context.stroke();
+    this.display.lines(points, {
+      fillStyle: 'rgba(195, 134, 68, 1)',
+      strokeStyle: 'rgba(195, 134, 68, 1)',
+      lineWidth: 3,
+    });
   }
 
   drawButter() {
-    const { context } = this.display;
     const points = this.getTransformedPoints(butterPoints);
-    context.beginPath();
-    context.fillStyle = 'rgba(248, 239, 204, 1)';
-    context.strokeStyle = 'rgba(248, 239, 204, 1)';
-    context.lineWidth = 2;
-    context.lineJoin = 'round';
-    context.moveTo(points[0][0], points[0][1]);
-    context.lineTo(points[1][0], points[1][1]);
-    context.lineTo(points[2][0], points[2][1]);
-    context.lineTo(points[3][0], points[3][1]);
-    context.closePath();
-    context.fill();
-    context.stroke();
+    this.display.lines(points, {
+      fillStyle: 'rgba(248, 239, 204, 1)',
+      strokeStyle: 'rgba(248, 239, 204, 1)',
+      lineWidth: 2,
+    });
   }
 
   tick(dt) {
