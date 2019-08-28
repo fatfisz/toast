@@ -1,8 +1,8 @@
 import Display from './Display';
-import Toast from './Toast';
 import Point from './Point';
+import Toast from './Toast';
 
-const width = 2;
+const width = 1;
 const height = 40;
 const points = [
   new Point(-width / 2, -height / 2),
@@ -48,7 +48,7 @@ export default class AirFlow {
     this.trimExcess();
     this.ensureEnough();
 
-    const fillStyle = `rgba(255, 255, 255, ${this.toast.dy * 0.15})`;
+    const fillStyle = `rgba(255, 255, 255, ${this.toast.dy * 0.1})`;
     for (const point of this.pointCache.values()) {
       this.drawOne(point, fillStyle);
     }

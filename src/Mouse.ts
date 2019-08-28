@@ -1,5 +1,6 @@
 import Display from './Display';
 import Point, { PointWithTimestamp } from './Point';
+import Sparkles from './Sparkles';
 import Toast from './Toast';
 
 const mouseMemoryThreshold = 120;
@@ -11,6 +12,7 @@ export default class Mouse {
   points: Set<PointWithTimestamp>;
   lastPoint: PointWithTimestamp | null;
   pressed: boolean;
+  sparkles: Sparkles;
 
   constructor(display: Display, toast: Toast) {
     this.display = display;
@@ -19,6 +21,7 @@ export default class Mouse {
     this.points = new Set();
     this.lastPoint = null;
     this.pressed = false;
+    this.sparkles = new Sparkles(display);
   }
 
   start() {
@@ -43,6 +46,7 @@ export default class Mouse {
       this.now,
     );
     this.points.add(this.lastPoint);
+    this.sparkles.add(this.lastPoint);
   }
 
   init() {
@@ -70,30 +74,33 @@ export default class Mouse {
     if (this.points.size < 2 || this.lastPoint === null) {
       return null;
     }
+
     const offset = this.display.getOffset();
     const [firstPoint] = this.points;
     return [firstPoint.sub(offset), this.lastPoint.sub(offset)];
   }
 
-  tick(now: number) {
+  tick(now: number, dt: number) {
+    this.sparkles.tick(now, dt);
+
     this.now = now;
 
     if (!this.pressed) {
       return;
     }
 
-    this.removeOldPoints(now);
+    this.removeOldPoints();
 
     if (this.toast.tryApplyForce(this.getCurrentVector())) {
       this.clearPoints();
     }
   }
 
-  removeOldPoints(now: number) {
+  removeOldPoints() {
     const pointsToRemove = [];
 
     for (const point of this.points) {
-      if (point.timestamp < now - mouseMemoryThreshold) {
+      if (point.timestamp < this.now - mouseMemoryThreshold) {
         pointsToRemove.push(point);
       }
     }
@@ -108,30 +115,6 @@ export default class Mouse {
   }
 
   draw() {
-    // This is only for debugging
-    if (this.points.size === 0) {
-      return;
-    }
-
-    const { context } = this.display;
-
-    context.fillStyle = 'rgba(255, 105, 180, 0.2)';
-    context.strokeStyle = 'rgba(255, 105, 180, 1)';
-
-    for (const { x, y } of this.points) {
-      context.beginPath();
-      context.arc(x, y, 5, 0, Math.PI * 2);
-      context.fill();
-    }
-
-    const currentVector = this.getCurrentVector();
-    if (currentVector !== null) {
-      const offset = this.display.getOffset();
-      const [firstPoint, lastPoint] = currentVector;
-      context.beginPath();
-      context.moveTo(...firstPoint.add(offset).toArgs());
-      context.lineTo(...lastPoint.add(offset).toArgs());
-      context.stroke();
-    }
+    this.sparkles.draw();
   }
 }

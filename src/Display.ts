@@ -48,9 +48,11 @@ export default class Display {
     Object.assign(this.context, defaultOptions, options);
 
     this.context.beginPath();
-    this.context.moveTo(...this.getTransformedPoint(firstPoint, z).toArgs());
+    const { x, y } = this.getTransformedPoint(firstPoint, z);
+    this.context.moveTo(x, y);
     for (const point of rest) {
-      this.context.lineTo(...this.getTransformedPoint(point, z).toArgs());
+      const { x, y } = this.getTransformedPoint(point, z);
+      this.context.lineTo(x, y);
     }
     this.context.closePath();
 
@@ -59,6 +61,18 @@ export default class Display {
     }
     if (options.strokeStyle) {
       this.context.stroke();
+    }
+  }
+
+  circle(mid: Point, radius: number, options: Partial<CanvasRenderingContext2D>, z: number = 1) {
+    Object.assign(this.context, defaultOptions, options);
+
+    this.context.beginPath();
+    const { x, y } = this.getTransformedPoint(mid, z);
+    this.context.arc(x, y, radius * z, 0, Math.PI * 2);
+
+    if (options.fillStyle) {
+      this.context.fill();
     }
   }
 
