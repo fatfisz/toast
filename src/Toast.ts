@@ -44,12 +44,14 @@ export default class Toast {
     this.dr = 0.01;
 
     withGui(gui => {
-      gui.add(this.position, 'x');
-      gui.add(this.position, 'y');
-      gui.add(this, 'r');
-      gui.add(this, 'dx').step(0.001);
-      gui.add(this, 'dy').step(0.001);
-      gui.add(this, 'dr').step(0.001);
+      const folder = gui.addFolder('Toast');
+      folder.open();
+      folder.add(this.position, 'x');
+      folder.add(this.position, 'y');
+      folder.add(this, 'r');
+      folder.add(this, 'dx').step(0.001);
+      folder.add(this, 'dy').step(0.001);
+      folder.add(this, 'dr').step(0.001);
     });
   }
 
@@ -84,7 +86,7 @@ export default class Toast {
     this.position.y += this.dy * dt;
     this.r += this.dr * dt;
 
-    const dampeningFactor = 1 - dt ** -Math.E;
+    const dampeningFactor = 1 - dt ** -2.4;
     this.dx *= dampeningFactor;
     this.dy *= dampeningFactor;
     this.dr *= dampeningFactor;
