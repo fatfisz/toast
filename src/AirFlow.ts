@@ -48,7 +48,7 @@ export default class AirFlow {
     this.trimExcess();
     this.ensureEnough();
 
-    const fillStyle = `rgba(255, 255, 255, ${this.toast.dy * 0.1})`;
+    const fillStyle = `rgba(255, 255, 255, ${this.toast.dy * 0.15})`;
     for (const point of this.pointCache.values()) {
       this.drawOne(point, fillStyle);
     }
