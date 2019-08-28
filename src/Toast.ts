@@ -108,26 +108,26 @@ export default class Toast {
 
   tryApplyForce(forceVector: [Point, Point] | null) {
     if (forceVector === null) {
-      return false;
+      return null;
     }
 
     const [firstPoint, lastPoint] = forceVector;
     const firstPointIsInside = this.getIntersection(this.position, firstPoint) === null;
 
     if (firstPointIsInside) {
-      return false;
+      return null;
     }
 
-    const forcePoint = this.getIntersection(firstPoint, lastPoint);
-    if (forcePoint === null) {
-      return false;
+    const intersectionPoint = this.getIntersection(firstPoint, lastPoint);
+    if (intersectionPoint === null) {
+      return null;
     }
 
-    const force = forcePoint.sub(firstPoint).scale(forceScale);
-    const normalizedForcePoint = forcePoint.sub(this.position);
-    this.applyForce(normalizedForcePoint, force);
+    const force = intersectionPoint.sub(firstPoint).scale(forceScale);
+    const adjustedIntersectionPoint = intersectionPoint.sub(this.position);
+    this.applyForce(adjustedIntersectionPoint, force);
 
-    return true;
+    return intersectionPoint;
   }
 
   getIntersection(firstPoint: Point, lastPoint: Point) {

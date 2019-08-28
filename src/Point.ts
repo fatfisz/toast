@@ -61,4 +61,8 @@ export class PointWithTimestamp extends Point {
     super(x, y);
     this.timestamp = timestamp;
   }
+
+  static fromPoint(point: Point, timestamp: number) {
+    return new PointWithTimestamp(point.x, point.y, timestamp);
+  }
 }

@@ -91,7 +91,12 @@ export default class Mouse {
 
     this.removeOldPoints();
 
-    if (this.toast.tryApplyForce(this.getCurrentVector())) {
+    const intersectionPoint = this.toast.tryApplyForce(this.getCurrentVector());
+    if (intersectionPoint !== null) {
+      this.sparkles.add(
+        PointWithTimestamp.fromPoint(intersectionPoint.add(this.display.getOffset()), now),
+        true,
+      );
       this.clearPoints();
     }
   }
