@@ -1,5 +1,3 @@
-import { GUI } from 'dat.gui';
-
 import AirFlow from './AirFlow';
 import Display from './Display';
 import Mouse from './Mouse';
@@ -11,12 +9,11 @@ const maxFrameDuration = 20;
 type Options = {
   airFlows: AirFlow[];
   display: Display;
-  gui?: GUI;
   mouse: Mouse;
   toast: Toast;
 };
 
-export function startGameLoop({ airFlows, display, gui, mouse, toast }: Options) {
+export function startGameLoop({ airFlows, display, mouse, toast }: Options) {
   mouse.init();
   let lastNow = 0;
   let skipFrame = true;
@@ -46,10 +43,6 @@ export function startGameLoop({ airFlows, display, gui, mouse, toast }: Options)
 
     mouse.tick(now);
     mouse.draw();
-
-    if (process.env.NODE_ENV !== 'production' && gui) {
-      gui.updateDisplay();
-    }
   }
 
   requestAnimationFrame(draw);

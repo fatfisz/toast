@@ -13,8 +13,4 @@ const airFlows = [
 ];
 const mouse = new Mouse(display, toast);
 
-if (process.env.NODE_ENV === 'production') {
   startGameLoop({ airFlows, display, mouse, toast });
-} else {
-  startGameLoop({ airFlows, display, mouse, toast, gui: require('./gui').getGui(toast) });
-}

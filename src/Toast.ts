@@ -1,4 +1,5 @@
 import Display from './Display';
+import { updateGui, withGui } from './gui';
 import Point from './Point';
 
 const height = 20;
@@ -41,9 +42,19 @@ export default class Toast {
     this.dx = 0.1;
     this.dy = 0;
     this.dr = 0.01;
+
+    withGui(gui => {
+      gui.add(this.position, 'x');
+      gui.add(this.position, 'y');
+      gui.add(this, 'r');
+      gui.add(this, 'dx').step(0.001);
+      gui.add(this, 'dy').step(0.001);
+      gui.add(this, 'dr').step(0.001);
+    });
   }
 
   draw() {
+    updateGui();
     this.drawToast();
     this.drawButter();
   }

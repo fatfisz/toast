@@ -1,16 +1,18 @@
-import DatGui from 'dat.gui';
+import { GUI } from 'dat.gui';
 
-import Toast from './Toast';
+let gui: GUI | null = null;
 
-export function getGui(toast: Toast) {
-  const gui = new DatGui.GUI();
+export function withGui(callback: (gui: GUI) => void) {
+  if (process.env.NODE_ENV !== 'production') {
+    if (gui === null) {
+      gui = new (require('dat.gui')).GUI() as GUI;
+    }
+    callback(gui);
+  }
+}
 
-  gui.add(toast.position, 'x');
-  gui.add(toast.position, 'y');
-  gui.add(toast, 'r');
-  gui.add(toast, 'dx').step(0.001);
-  gui.add(toast, 'dy').step(0.001);
-  gui.add(toast, 'dr').step(0.001);
-
-  return gui;
+export function updateGui() {
+  withGui(gui => {
+    gui.updateDisplay();
+  });
 }
