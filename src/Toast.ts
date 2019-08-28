@@ -57,7 +57,6 @@ export default class Toast {
     this.display.lines(points, {
       fillStyle: 'rgba(195, 134, 68, 1)',
       strokeStyle: 'rgba(195, 134, 68, 1)',
-      lineWidth: 3,
     });
   }
 
@@ -66,7 +65,6 @@ export default class Toast {
     this.display.lines(points, {
       fillStyle: 'rgba(248, 239, 204, 1)',
       strokeStyle: 'rgba(248, 239, 204, 1)',
-      lineWidth: 2,
     });
   }
 

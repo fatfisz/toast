@@ -7,7 +7,7 @@ const mid = new Point(width / 2, height / 2);
 
 const defaultOptions = {
   lineJoin: 'round',
-  lineWidth: 1,
+  lineWidth: 3,
 };
 
 declare let canvas: HTMLCanvasElement;
