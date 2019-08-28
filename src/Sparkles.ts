@@ -2,13 +2,13 @@ import Display from './Display';
 import { PointWithTimestamp } from './Point';
 
 const sparklesPerMove = 2;
-const sparklesPerHit = 15;
+const sparklesPerHit = 18;
 const timeDelta = 5;
-const maxDistance = 50;
+const maxDistance = 60;
 const size = 12;
 const duration = 600;
-const hitDuration = 2 * duration;
-const fullVisibilityThreshold = duration / 20;
+const hitDuration = duration * 2;
+const fullVisibilityThreshold = duration * 0.05;
 
 function getSparkleCanvas(isHit: boolean) {
   const offset = 10;
