@@ -16,23 +16,21 @@ export default class Background {
   constructor(display: Display) {
     this.display = display;
 
+    display.canvas.style.backgroundColor = colors.sky;
+
     withGui(gui => {
       const folder = gui.addFolder('Background colors');
-      folder.addColor(colors, 'sky');
+      folder.addColor(colors, 'sky').onChange((value: string) => {
+        display.canvas.style.backgroundColor = value;
+      });
       folder.addColor(colors, 'sun');
       folder.addColor(colors, 'ground');
     });
   }
 
   draw() {
-    this.sky();
     this.sun();
     this.ground();
-  }
-
-  sky() {
-    this.display.context.fillStyle = colors.sky;
-    this.display.context.fillRect(0, 0, this.display.width, this.display.height);
   }
 
   sun() {
