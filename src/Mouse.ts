@@ -5,6 +5,11 @@ import Toast from './Toast';
 
 const mouseMemoryThreshold = 120;
 
+interface PointEvent {
+  clientX: number;
+  clientY: number;
+}
+
 export default class Mouse {
   display: Display;
   toast: Toast;
@@ -24,8 +29,16 @@ export default class Mouse {
     this.sparkles = new Sparkles(display);
   }
 
-  start() {
+  start(event: PointEvent) {
     this.pressed = true;
+    this.pushPoint(event);
+  }
+
+  move(event: PointEvent) {
+    if (!this.pressed) {
+      return;
+    }
+    this.pushPoint(event);
   }
 
   clearPoints() {
@@ -38,7 +51,7 @@ export default class Mouse {
     this.pressed = false;
   }
 
-  pushPoint(event: MouseEvent) {
+  pushPoint(event: PointEvent) {
     const { left, top, width, height } = this.display.canvas.getBoundingClientRect();
     this.lastPoint = new PointWithTimestamp(
       ((event.clientX - left) * this.display.width) / width,
@@ -49,24 +62,45 @@ export default class Mouse {
     this.sparkles.add(this.lastPoint);
   }
 
+  normalizeTouchEvent(event: TouchEvent) {
+    return event.touches[0];
+  }
+
   init() {
     this.display.canvas.addEventListener('mousedown', event => {
       event.preventDefault();
+      this.start(event);
+    });
 
-      this.pressed = true;
-      this.pushPoint(event);
+    this.display.canvas.addEventListener('touchstart', event => {
+      event.preventDefault();
+      this.start(this.normalizeTouchEvent(event));
     });
 
     this.display.canvas.addEventListener('mousemove', event => {
-      if (!this.pressed) {
-        return;
-      }
+      event.preventDefault();
+      this.move(event);
+    });
 
-      this.pushPoint(event);
+    this.display.canvas.addEventListener('touchmove', event => {
+      event.preventDefault();
+      this.move(this.normalizeTouchEvent(event));
     });
 
     window.addEventListener('mouseup', () => {
       this.stop();
+    });
+
+    window.addEventListener('touchend', () => {
+      this.stop();
+    });
+
+    window.document.addEventListener('visibilitychange', () => {
+      this.stop();
+    });
+
+    window.addEventListener('contextmenu', event => {
+      event.preventDefault();
     });
   }
 
