@@ -70,14 +70,12 @@ class Sparkle extends PointWithTimestamp {
 }
 
 export default class Sparkles {
-  display: Display;
-  sparkles: Set<Sparkle>;
   now: number;
+  sparkles: Set<Sparkle>;
 
-  constructor(display: Display) {
-    this.display = display;
-    this.sparkles = new Set();
+  constructor() {
     this.now = -Infinity;
+    this.sparkles = new Set();
   }
 
   add(point: PointWithTimestamp, isHit = false) {
@@ -112,9 +110,9 @@ export default class Sparkles {
     }
   }
 
-  draw() {
+  draw(display: Display) {
     for (const sparkle of this.sparkles) {
-      sparkle.draw(this.display, this.now);
+      sparkle.draw(display, this.now);
     }
   }
 }

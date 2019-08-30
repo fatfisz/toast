@@ -15,34 +15,16 @@ const groundHeight = displayHeight / groundZ;
 const groundTopLeft = new Point(-groundWidth, groundHeight / 3);
 const groundBottomRight = new Point(groundWidth, groundHeight);
 
-export default class Background {
-  display: Display;
+export default function drawBackground(display: Display) {
+  display.rect(skyTopLeft, skyBottomRight, {
+    absolute: true,
+    fillStyle: getColor(23),
+  });
 
-  constructor(display: Display) {
-    this.display = display;
-  }
+  display.image(planet, planetMid, { z: planetZ });
 
-  draw() {
-    this.sky();
-    this.planet();
-    this.ground();
-  }
-
-  sky() {
-    this.display.rect(skyTopLeft, skyBottomRight, {
-      absolute: true,
-      fillStyle: getColor(23),
-    });
-  }
-
-  planet() {
-    this.display.image(planet, planetMid, { z: planetZ });
-  }
-
-  ground() {
-    this.display.rect(groundTopLeft, groundBottomRight, {
-      fillStyle: getColor(5),
-      z: groundZ,
-    });
-  }
+  display.rect(groundTopLeft, groundBottomRight, {
+    fillStyle: getColor(5),
+    z: groundZ,
+  });
 }

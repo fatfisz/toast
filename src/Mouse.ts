@@ -12,36 +12,32 @@ interface PointEvent {
 }
 
 export default class Mouse {
-  display: Display;
-  toast: Toast;
+  lastPoint: PointWithTimestamp | null;
   now: number;
   points: Set<PointWithTimestamp>;
-  lastPoint: PointWithTimestamp | null;
   pressed: boolean;
   sparkles: Sparkles;
   wizard: Wizard;
 
-  constructor(display: Display, toast: Toast) {
-    this.display = display;
-    this.toast = toast;
+  constructor() {
+    this.lastPoint = null;
     this.now = -Infinity;
     this.points = new Set();
-    this.lastPoint = null;
     this.pressed = false;
-    this.sparkles = new Sparkles(display);
-    this.wizard = new Wizard(display);
+    this.sparkles = new Sparkles();
+    this.wizard = new Wizard();
   }
 
-  start(event: PointEvent) {
+  start(event: PointEvent, display: Display) {
     this.pressed = true;
-    this.pushPoint(event);
+    this.pushPoint(event, display.canvas);
   }
 
-  move(event: PointEvent) {
+  move(event: PointEvent, display: Display) {
     if (!this.pressed) {
       return;
     }
-    this.pushPoint(event);
+    this.pushPoint(event, display.canvas);
   }
 
   clearPoints() {
@@ -54,8 +50,8 @@ export default class Mouse {
     this.pressed = false;
   }
 
-  pushPoint(event: PointEvent) {
-    const { left, top, width, height } = this.display.canvas.getBoundingClientRect();
+  pushPoint(event: PointEvent, canvas: HTMLCanvasElement) {
+    const { left, top, width, height } = canvas.getBoundingClientRect();
     this.lastPoint = new PointWithTimestamp(
       ((event.clientX - left) * displayWidth) / width,
       ((event.clientY - top) * displayHeight) / height,
@@ -69,25 +65,25 @@ export default class Mouse {
     return event.touches[0];
   }
 
-  init() {
-    this.display.canvas.addEventListener('mousedown', event => {
+  init(display: Display) {
+    display.canvas.addEventListener('mousedown', event => {
       event.preventDefault();
-      this.start(event);
+      this.start(event, display);
     });
 
-    this.display.canvas.addEventListener('touchstart', event => {
+    display.canvas.addEventListener('touchstart', event => {
       event.preventDefault();
-      this.start(this.normalizeTouchEvent(event));
+      this.start(this.normalizeTouchEvent(event), display);
     });
 
-    this.display.canvas.addEventListener('mousemove', event => {
+    display.canvas.addEventListener('mousemove', event => {
       event.preventDefault();
-      this.move(event);
+      this.move(event, display);
     });
 
-    this.display.canvas.addEventListener('touchmove', event => {
+    display.canvas.addEventListener('touchmove', event => {
       event.preventDefault();
-      this.move(this.normalizeTouchEvent(event));
+      this.move(this.normalizeTouchEvent(event), display);
     });
 
     window.addEventListener('mouseup', () => {
@@ -107,17 +103,16 @@ export default class Mouse {
     });
   }
 
-  getCurrentVector(): [Point, Point] | null {
+  getCurrentVector(displayOffset: Point): [Point, Point] | null {
     if (this.points.size < 2 || this.lastPoint === null) {
       return null;
     }
 
-    const offset = this.display.getOffset();
     const [firstPoint] = this.points;
-    return [firstPoint.sub(offset), this.lastPoint.sub(offset)];
+    return [firstPoint.sub(displayOffset), this.lastPoint.sub(displayOffset)];
   }
 
-  tick(now: number, dt: number) {
+  tick(now: number, dt: number, displayOffset: Point, toast: Toast) {
     this.sparkles.tick(now, dt);
     this.wizard.tick(now, this.pressed);
 
@@ -129,10 +124,10 @@ export default class Mouse {
 
     this.removeOldPoints();
 
-    const intersectionPoint = this.toast.tryApplyForce(this.getCurrentVector());
+    const intersectionPoint = toast.tryApplyForce(this.getCurrentVector(displayOffset));
     if (intersectionPoint !== null) {
       this.sparkles.add(
-        PointWithTimestamp.fromPoint(intersectionPoint.add(this.display.getOffset()), now),
+        PointWithTimestamp.fromPoint(intersectionPoint.add(displayOffset), now),
         true,
       );
       this.clearPoints();
@@ -157,8 +152,8 @@ export default class Mouse {
     }
   }
 
-  draw() {
-    this.sparkles.draw();
-    this.wizard.draw();
+  draw(display: Display) {
+    this.sparkles.draw(display);
+    this.wizard.draw(display);
   }
 }

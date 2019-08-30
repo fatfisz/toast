@@ -21,20 +21,18 @@ const toastPoints = [
 ];
 
 export default class Toast {
-  display: Display;
-  mid: Point;
-  r: number;
+  dr: number;
   dx: number;
   dy: number;
-  dr: number;
+  mid: Point;
+  r: number;
 
-  constructor(display: Display, x = 0, y = 0) {
-    this.display = display;
-    this.mid = new Point(x, y);
-    this.r = 0.4;
+  constructor(x = 0, y = 0) {
+    this.dr = 0.01;
     this.dx = 0.1;
     this.dy = 0;
-    this.dr = 0.01;
+    this.mid = new Point(x, y);
+    this.r = 0.4;
 
     withGui(gui => {
       const folder = gui.addFolder('Toast');
@@ -48,9 +46,9 @@ export default class Toast {
     });
   }
 
-  draw() {
+  draw(display: Display) {
     updateGui();
-    this.display.image(toast, this.mid, { r: this.r });
+    display.image(toast, this.mid, { r: this.r });
   }
 
   getTransformedPoints(points: Point[]) {

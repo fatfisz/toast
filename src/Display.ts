@@ -27,17 +27,17 @@ const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions 
 declare let canvas: HTMLCanvasElement;
 
 export default class Display {
+  camera: Point;
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
-  camera: Point;
 
   constructor() {
+    this.camera = new Point(0, cameraOffset);
     this.canvas = canvas;
     this.canvas.width = displayWidth;
     this.canvas.height = displayHeight;
     this.context = canvas.getContext('2d') as CanvasRenderingContext2D;
     this.context.imageSmoothingEnabled = false;
-    this.camera = new Point(0, cameraOffset);
   }
 
   trackToast(toast: Toast) {

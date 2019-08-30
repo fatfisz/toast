@@ -16,12 +16,10 @@ const restCount = wizard.length - 1 - startCount;
 const phaseDuration = 100;
 
 export default class Wizard {
-  display: Display;
   phase: number;
   startTimestamp: number;
 
-  constructor(display: Display) {
-    this.display = display;
+  constructor() {
     this.phase = 0;
     this.startTimestamp = 0;
   }
@@ -42,11 +40,11 @@ export default class Wizard {
     }
   }
 
-  draw() {
-    this.display.image(wizard[0], mid, { absolute: true });
+  draw(display: Display) {
+    display.image(wizard[0], mid, { absolute: true });
 
     if (this.phase > 0) {
-      this.display.image(wizard[this.phase], mid, { absolute: true });
+      display.image(wizard[this.phase], mid, { absolute: true });
     }
   }
 }
