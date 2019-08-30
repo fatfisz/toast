@@ -1,10 +1,19 @@
-import Display from './Display';
-import { getColor, getModel } from './sprites';
+import Display, { displayHeight, displayWidth } from './Display';
 import Point from './Point';
+import { getColor, getModel } from './sprites';
+
+const skyTopLeft = new Point(0, 0);
+const skyBottomRight = new Point(displayWidth, displayHeight);
 
 const planet = getModel('planet');
-const groundZ = 0.0025;
 const planetZ = 0.0015;
+const planetMid = new Point(displayWidth / 4 / planetZ, -displayHeight / 7 / planetZ);
+
+const groundZ = 0.0025;
+const groundWidth = displayWidth / 2 / groundZ;
+const groundHeight = displayHeight / groundZ;
+const groundTopLeft = new Point(-groundWidth, groundHeight / 3);
+const groundBottomRight = new Point(groundWidth, groundHeight);
 
 export default class Background {
   display: Display;
@@ -20,21 +29,18 @@ export default class Background {
   }
 
   sky() {
-    this.display.rect(new Point(0, 0), new Point(this.display.width, this.display.height), {
+    this.display.rect(skyTopLeft, skyBottomRight, {
       absolute: true,
       fillStyle: getColor(23),
     });
   }
 
   planet() {
-    const mid = new Point(this.display.width / 4 / planetZ, -this.display.height / 7 / planetZ);
-    this.display.image(planet, mid, { z: planetZ });
+    this.display.image(planet, planetMid, { z: planetZ });
   }
 
   ground() {
-    const width = this.display.width / 2 / groundZ;
-    const height = this.display.height / groundZ;
-    this.display.rect(new Point(-width, height / 3), new Point(width, height), {
+    this.display.rect(groundTopLeft, groundBottomRight, {
       fillStyle: getColor(5),
       z: groundZ,
     });

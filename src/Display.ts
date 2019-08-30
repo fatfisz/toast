@@ -10,10 +10,10 @@ interface TransformationOptions {
 interface DrawOptions extends TransformationOptions, CanvasRenderingContext2D {}
 
 const imageScale = 2;
-const width = 1000;
-const height = 1000;
-const mid = new Point(width / 2, height / 2);
-const cameraOffset = height / 18;
+export const displayWidth = 1000;
+export const displayHeight = 1000;
+const mid = new Point(displayWidth / 2, displayHeight / 2);
+const cameraOffset = displayHeight / 18;
 
 const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions = {
   absolute: false,
@@ -29,18 +29,14 @@ declare let canvas: HTMLCanvasElement;
 export default class Display {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
-  width: number;
-  height: number;
   camera: Point;
 
   constructor() {
     this.canvas = canvas;
-    this.canvas.width = width;
-    this.canvas.height = height;
+    this.canvas.width = displayWidth;
+    this.canvas.height = displayHeight;
     this.context = canvas.getContext('2d') as CanvasRenderingContext2D;
     this.context.imageSmoothingEnabled = false;
-    this.width = width;
-    this.height = height;
     this.camera = new Point(0, cameraOffset);
   }
 
@@ -104,6 +100,6 @@ export default class Display {
   }
 
   clear() {
-    this.context.clearRect(0, 0, width, height);
+    this.context.clearRect(0, 0, displayWidth, displayHeight);
   }
 }

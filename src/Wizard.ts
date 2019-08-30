@@ -1,4 +1,4 @@
-import Display from './Display';
+import Display, { displayHeight, displayWidth } from './Display';
 import Point from './Point';
 import { getModel } from './sprites';
 
@@ -10,6 +10,7 @@ const wizard = [
   getModel('wizard', 4),
   getModel('wizard', 5),
 ];
+const mid = new Point(displayWidth / 2, displayHeight / 4);
 const startCount = 2;
 const restCount = wizard.length - 1 - startCount;
 const phaseDuration = 100;
@@ -42,8 +43,6 @@ export default class Wizard {
   }
 
   draw() {
-    const mid = new Point(this.display.width / 2, this.display.height / 4);
-
     this.display.image(wizard[0], mid, { absolute: true });
 
     if (this.phase > 0) {

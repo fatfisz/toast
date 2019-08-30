@@ -1,4 +1,4 @@
-import Display from './Display';
+import Display, { displayWidth } from './Display';
 import { updateGui, withGui } from './gui';
 import Point from './Point';
 import { getModel } from './sprites';
@@ -10,7 +10,7 @@ const gravity = 1.2;
 const gravityFactor = 0.2;
 const forceScale = 0.001;
 const toastInertia = 1 / 4000;
-const barrierPosition = 0.4;
+const barrierPosition = (displayWidth * 0.4) / 2;
 const barrierForce = 0.01;
 
 const toastPoints = [
@@ -77,7 +77,7 @@ export default class Toast {
   }
 
   ensureWithinWalls() {
-    if (Math.abs(this.mid.x) > (barrierPosition * this.display.width) / 2) {
+    if (Math.abs(this.mid.x) > barrierPosition) {
       this.dx += barrierForce * -Math.sign(this.mid.x);
     }
   }

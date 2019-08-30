@@ -1,4 +1,4 @@
-import Display from './Display';
+import Display, { displayHeight, displayWidth } from './Display';
 import Point from './Point';
 import { getColor } from './sprites';
 import Toast from './Toast';
@@ -7,8 +7,8 @@ const width = 1;
 const height = 40;
 const offset = new Point(width / 2, height / 2);
 const verticalDensity = height * 0.75;
-const widthModifier = 0.95;
-const buckets = 200;
+const fittingShapeCount = Math.ceil(displayHeight / verticalDensity);
+const rangeWidth = displayWidth * 0.95;
 
 export default class AirFlow {
   display: Display;
@@ -33,13 +33,9 @@ export default class AirFlow {
 
   ensurePoint(y: number) {
     if (!this.pointCache.has(y)) {
-      const width = this.display.width * widthModifier;
       this.pointCache.set(
         y,
-        new Point(
-          (Math.floor(Math.random() * buckets) / (buckets - 1)) * width - width / 2,
-          y * verticalDensity,
-        ),
+        new Point(Math.random() * rangeWidth - rangeWidth / 2, y * verticalDensity),
       );
     }
   }
@@ -55,11 +51,7 @@ export default class AirFlow {
   }
 
   getMinimumY() {
-    return Math.floor((this.display.camera.y - this.display.height / 2) / verticalDensity);
-  }
-
-  getNumberOfFittingShapes() {
-    return Math.ceil(this.display.height / verticalDensity);
+    return Math.floor((this.display.camera.y - displayHeight / 2) / verticalDensity);
   }
 
   trimExcess() {
@@ -74,7 +66,7 @@ export default class AirFlow {
 
   ensureEnough() {
     const minY = this.getMinimumY();
-    const maxY = minY + this.getNumberOfFittingShapes();
+    const maxY = minY + fittingShapeCount;
 
     for (let y = minY; y <= maxY; y += 1) {
       this.ensurePoint(y);

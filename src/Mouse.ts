@@ -1,4 +1,4 @@
-import Display from './Display';
+import Display, { displayHeight, displayWidth } from './Display';
 import Point, { PointWithTimestamp } from './Point';
 import Sparkles from './Sparkles';
 import Toast from './Toast';
@@ -57,8 +57,8 @@ export default class Mouse {
   pushPoint(event: PointEvent) {
     const { left, top, width, height } = this.display.canvas.getBoundingClientRect();
     this.lastPoint = new PointWithTimestamp(
-      ((event.clientX - left) * this.display.width) / width,
-      ((event.clientY - top) * this.display.height) / height,
+      ((event.clientX - left) * displayWidth) / width,
+      ((event.clientY - top) * displayHeight) / height,
       this.now,
     );
     this.points.add(this.lastPoint);
