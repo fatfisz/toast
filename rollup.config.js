@@ -1,13 +1,20 @@
 import babel from 'rollup-plugin-babel';
+import json from 'rollup-plugin-json';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 
+import stripSpriteStack from './rollup-plugins/stripSpriteStack';
+
 export default {
   input: 'src/index.ts',
   plugins: [
+    stripSpriteStack(),
     babel({
       extensions: ['.ts'],
+    }),
+    json({
+      namedExports: false,
     }),
     nodeResolve({
       extensions: ['.ts'],

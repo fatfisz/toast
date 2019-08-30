@@ -1,59 +1,42 @@
 import Display from './Display';
-import { withGui } from './gui';
+import { getColor, getModel } from './sprites';
 import Point from './Point';
 
+const planet = getModel('planet');
 const groundZ = 0.0025;
-const sunZ = 0.002;
-const colors = {
-  sky: '#77c3a2',
-  sun: '#d7b366',
-  ground: '#520016',
-};
+const planetZ = 0.0015;
 
 export default class Background {
   display: Display;
 
   constructor(display: Display) {
     this.display = display;
-
-    display.canvas.style.backgroundColor = colors.sky;
-
-    withGui(gui => {
-      const folder = gui.addFolder('Background colors');
-      folder.addColor(colors, 'sky').onChange((value: string) => {
-        display.canvas.style.backgroundColor = value;
-      });
-      folder.addColor(colors, 'sun');
-      folder.addColor(colors, 'ground');
-    });
   }
 
   draw() {
-    this.sun();
+    this.sky();
+    this.planet();
     this.ground();
   }
 
-  sun() {
-    this.display.circle(
-      new Point(this.display.width / sunZ / 5, -this.display.height / sunZ / 12),
-      160 / sunZ,
-      { fillStyle: colors.sun },
-      sunZ,
-    );
+  sky() {
+    this.display.rect(new Point(0, 0), new Point(this.display.width, this.display.height), {
+      absolute: true,
+      fillStyle: getColor(23),
+    });
+  }
+
+  planet() {
+    const mid = new Point(this.display.width / 4 / planetZ, -this.display.height / 7 / planetZ);
+    this.display.image(planet, mid, { z: planetZ });
   }
 
   ground() {
     const width = this.display.width / 2 / groundZ;
     const height = this.display.height / groundZ;
-    this.display.lines(
-      [
-        new Point(-width, -height / 15),
-        new Point(-width, height),
-        new Point(width, height),
-        new Point(width, -height / 15),
-      ],
-      { fillStyle: colors.ground },
-      groundZ,
-    );
+    this.display.rect(new Point(-width, height / 3), new Point(width, height), {
+      fillStyle: getColor(5),
+      z: groundZ,
+    });
   }
 }

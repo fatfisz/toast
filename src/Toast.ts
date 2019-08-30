@@ -1,16 +1,16 @@
 import Display from './Display';
 import { updateGui, withGui } from './gui';
 import Point from './Point';
+import { getModel } from './sprites';
 
-const height = 20;
-const width = 200;
-const butterHeight = 5;
-const butterWidth = width * 0.9;
+const toast = getModel('toast');
+const height = toast.height * 2;
+const width = toast.width * 2;
 const gravity = 1.2;
 const gravityFactor = 0.2;
 const forceScale = 0.001;
-const toastInertia = 1 / 4200;
-const barrierPosition = 200;
+const toastInertia = 1 / 4000;
+const barrierPosition = 0.4;
 const barrierForce = 0.01;
 
 const toastPoints = [
@@ -20,16 +20,9 @@ const toastPoints = [
   new Point(width / 2, -height / 2),
 ];
 
-const butterPoints = [
-  new Point(-butterWidth / 2, -height / 2 - butterHeight),
-  new Point(-butterWidth / 2, -height / 2),
-  new Point(butterWidth / 2, -height / 2),
-  new Point(butterWidth / 2, -height / 2 - butterHeight),
-];
-
 export default class Toast {
   display: Display;
-  position: Point;
+  mid: Point;
   r: number;
   dx: number;
   dy: number;
@@ -37,7 +30,7 @@ export default class Toast {
 
   constructor(display: Display, x = 0, y = 0) {
     this.display = display;
-    this.position = new Point(x, y);
+    this.mid = new Point(x, y);
     this.r = 0.4;
     this.dx = 0.1;
     this.dy = 0;
@@ -46,8 +39,8 @@ export default class Toast {
     withGui(gui => {
       const folder = gui.addFolder('Toast');
       folder.open();
-      folder.add(this.position, 'x');
-      folder.add(this.position, 'y');
+      folder.add(this.mid, 'x');
+      folder.add(this.mid, 'y');
       folder.add(this, 'r');
       folder.add(this, 'dx').step(0.001);
       folder.add(this, 'dy').step(0.001);
@@ -57,33 +50,16 @@ export default class Toast {
 
   draw() {
     updateGui();
-    this.drawToast();
-    this.drawButter();
+    this.display.image(toast, this.mid, { r: this.r });
   }
 
   getTransformedPoints(points: Point[]) {
-    return points.map(point => point.rotate(this.r).add(this.position));
-  }
-
-  drawToast() {
-    const points = this.getTransformedPoints(toastPoints);
-    this.display.lines(points, {
-      fillStyle: 'rgba(195, 134, 68, 1)',
-      strokeStyle: 'rgba(195, 134, 68, 1)',
-    });
-  }
-
-  drawButter() {
-    const points = this.getTransformedPoints(butterPoints);
-    this.display.lines(points, {
-      fillStyle: 'rgba(248, 239, 204, 1)',
-      strokeStyle: 'rgba(248, 239, 204, 1)',
-    });
+    return points.map(point => point.rotate(this.r).add(this.mid));
   }
 
   tick(dt: number) {
-    this.position.x += this.dx * dt;
-    this.position.y += this.dy * dt;
+    this.mid.x += this.dx * dt;
+    this.mid.y += this.dy * dt;
     this.r += this.dr * dt;
 
     const dampeningFactor = 1 - dt ** -2.4;
@@ -101,8 +77,8 @@ export default class Toast {
   }
 
   ensureWithinWalls() {
-    if (Math.abs(this.position.x) > barrierPosition) {
-      this.dx += barrierForce * -Math.sign(this.position.x);
+    if (Math.abs(this.mid.x) > (barrierPosition * this.display.width) / 2) {
+      this.dx += barrierForce * -Math.sign(this.mid.x);
     }
   }
 
@@ -112,7 +88,7 @@ export default class Toast {
     }
 
     const [firstPoint, lastPoint] = forceVector;
-    const firstPointIsInside = this.getIntersection(this.position, firstPoint) === null;
+    const firstPointIsInside = this.getIntersection(this.mid, firstPoint) === null;
 
     if (firstPointIsInside) {
       return null;
@@ -124,7 +100,7 @@ export default class Toast {
     }
 
     const force = intersectionPoint.sub(firstPoint).scale(forceScale);
-    const adjustedIntersectionPoint = intersectionPoint.sub(this.position);
+    const adjustedIntersectionPoint = intersectionPoint.sub(this.mid);
     this.applyForce(adjustedIntersectionPoint, force);
 
     return intersectionPoint;

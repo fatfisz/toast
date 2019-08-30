@@ -1,50 +1,18 @@
 import Display from './Display';
-import { PointWithTimestamp } from './Point';
+import Point, { PointWithTimestamp } from './Point';
+import { getModel } from './sprites';
 
-const sparklesPerMove = 2;
-const sparklesPerHit = 18;
+const sparklesPerMove = 1;
+const sparklesPerHit = 20;
 const timeDelta = 5;
-const maxDistance = 60;
-const size = 12;
-const duration = 600;
+const maxDistance = 80;
+const duration = 400;
 const hitDuration = duration * 2;
 const fullVisibilityThreshold = duration * 0.05;
 
-function getSparkleCanvas(isHit: boolean) {
-  const offset = 10;
-  const canvas = document.createElement('canvas');
-  canvas.width = size + 2 * offset;
-  canvas.height = size + 2 * offset;
-  const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-  context.strokeStyle = `rgb(255, 105, 180)`;
-  context.fillStyle = isHit ? `rgb(255, 255, 255)` : `rgb(255, 105, 180)`;
-
-  context.translate(offset, offset);
-  context.lineWidth = 1;
-  context.beginPath();
-  context.moveTo(0, size / 2);
-  context.quadraticCurveTo(size / 2, size / 2, size / 2, 0);
-  context.quadraticCurveTo(size / 2, size / 2, size, size / 2);
-  context.quadraticCurveTo(size / 2, size / 2, size / 2, size);
-  context.quadraticCurveTo(size / 2, size / 2, 0, size / 2);
-  context.closePath();
-  context.stroke();
-
-  context.beginPath();
-  context.moveTo(0, size / 2);
-  context.quadraticCurveTo(size / 2, size / 2, size / 2, 0);
-  context.quadraticCurveTo(size / 2, size / 2, size, size / 2);
-  context.quadraticCurveTo(size / 2, size / 2, size / 2, size);
-  context.quadraticCurveTo(size / 2, size / 2, 0, size / 2);
-  context.closePath();
-  context.fill();
-
-  return canvas;
-}
-
 const sparkleImage = {
-  basic: getSparkleCanvas(false),
-  hit: getSparkleCanvas(true),
+  basic: getModel('sparkles', 0),
+  hit: getModel('sparkles', 1),
 };
 
 function getOpacity(duration: number, time: number) {
@@ -54,8 +22,10 @@ function getOpacity(duration: number, time: number) {
 }
 
 class Sparkle extends PointWithTimestamp {
+  r: number;
   dx: number;
   dy: number;
+  dr: number;
   isHit: boolean;
 
   constructor(point: PointWithTimestamp, timeOffset: number, isHit: boolean) {
@@ -64,8 +34,10 @@ class Sparkle extends PointWithTimestamp {
       point.y + (Math.random() - 0.5) * maxDistance,
       point.timestamp + timeOffset,
     );
+    this.r = Math.random() * Math.PI;
     this.dx = ((Math.random() - 0.5) * maxDistance) / duration;
     this.dy = ((Math.random() - 0.5) * maxDistance) / duration;
+    this.dr = Math.random() / 100;
     this.isHit = isHit;
   }
 
@@ -77,16 +49,23 @@ class Sparkle extends PointWithTimestamp {
   tick(dt: number) {
     this.x += this.dx * dt;
     this.y += this.dy * dt;
+    this.r += this.dr * dt;
 
-    const dampeningFactor = 1 - dt ** -1.8;
+    const dampeningFactor = 1 - dt ** -1.5;
     this.dx *= dampeningFactor;
     this.dy *= dampeningFactor;
+    this.dr *= dampeningFactor;
   }
 
-  draw(context: CanvasRenderingContext2D, now: number) {
+  draw(display: Display, now: number) {
     const image = this.isHit ? sparkleImage.hit : sparkleImage.basic;
-    context.globalAlpha = getOpacity(this.isHit ? hitDuration : duration, now - this.timestamp);
-    context.drawImage(image, this.x - image.width / 2, this.y - image.height / 2);
+    const timeBasedOpacity = getOpacity(this.isHit ? hitDuration : duration, now - this.timestamp);
+    const hitOpacity = this.isHit ? 1 : 0.5;
+    display.image(image, new Point(this.x, this.y), {
+      absolute: true,
+      globalAlpha: timeBasedOpacity * hitOpacity,
+      r: this.r,
+    });
   }
 }
 
@@ -135,8 +114,7 @@ export default class Sparkles {
 
   draw() {
     for (const sparkle of this.sparkles) {
-      sparkle.draw(this.display.context, this.now);
+      sparkle.draw(this.display, this.now);
     }
-    this.display.context.globalAlpha = 1;
   }
 }

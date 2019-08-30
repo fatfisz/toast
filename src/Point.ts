@@ -30,6 +30,10 @@ export default class Point {
     return ((this.x - x) ** 2 + (this.y - y) ** 2) ** 0.5;
   }
 
+  round() {
+    return new Point(Math.round(this.x), Math.round(this.y));
+  }
+
   /** Taken from http://paulbourke.net/geometry/pointlineplane/ */
   static intersection(
     { x: x1, y: y1 }: Point,

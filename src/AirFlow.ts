@@ -1,15 +1,11 @@
 import Display from './Display';
 import Point from './Point';
+import { getColor } from './sprites';
 import Toast from './Toast';
 
 const width = 1;
 const height = 40;
-const points = [
-  new Point(-width / 2, -height / 2),
-  new Point(-width / 2, height / 2),
-  new Point(width / 2, height / 2),
-  new Point(width / 2, -height / 2),
-];
+const offset = new Point(width / 2, height / 2);
 const verticalDensity = height * 0.75;
 const widthModifier = 0.95;
 const buckets = 200;
@@ -27,8 +23,12 @@ export default class AirFlow {
     this.pointCache = new Map();
   }
 
-  drawOne(midPoint: Point, fillStyle: string) {
-    this.display.lines(points.map(point => point.add(midPoint)), { fillStyle }, this.z);
+  drawOne(midPoint: Point, globalAlpha: number) {
+    this.display.rect(midPoint.sub(offset), midPoint.add(offset), {
+      fillStyle: getColor(26),
+      globalAlpha,
+      z: this.z,
+    });
   }
 
   ensurePoint(y: number) {
@@ -48,9 +48,9 @@ export default class AirFlow {
     this.trimExcess();
     this.ensureEnough();
 
-    const fillStyle = `rgba(255, 255, 255, ${this.toast.dy * 0.15})`;
+    const alpha = Math.min(Math.abs(this.toast.dy) * 0.15, 1);
     for (const point of this.pointCache.values()) {
-      this.drawOne(point, fillStyle);
+      this.drawOne(point, alpha);
     }
   }
 

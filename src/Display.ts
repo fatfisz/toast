@@ -1,13 +1,27 @@
 import Point from './Point';
 import Toast from './Toast';
 
-const width = 900;
-const height = 1600;
-const mid = new Point(width / 2, height / 2);
+interface TransformationOptions {
+  absolute: boolean;
+  r: number;
+  z: number;
+}
 
-const defaultOptions = {
+interface DrawOptions extends TransformationOptions, CanvasRenderingContext2D {}
+
+const imageScale = 2;
+const width = 1000;
+const height = 1000;
+const mid = new Point(width / 2, height / 2);
+const cameraOffset = height / 18;
+
+const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions = {
+  absolute: false,
+  globalAlpha: 1,
   lineJoin: 'round',
   lineWidth: 3,
+  r: 0,
+  z: 1,
 };
 
 declare let canvas: HTMLCanvasElement;
@@ -24,56 +38,69 @@ export default class Display {
     this.canvas.width = width;
     this.canvas.height = height;
     this.context = canvas.getContext('2d') as CanvasRenderingContext2D;
+    this.context.imageSmoothingEnabled = false;
     this.width = width;
     this.height = height;
-    this.camera = new Point(0, 0);
+    this.camera = new Point(0, cameraOffset);
   }
 
   trackToast(toast: Toast) {
-    this.camera.y = toast.position.y;
+    this.camera.y = toast.mid.y + cameraOffset;
   }
 
   getOffset() {
     return mid.sub(this.camera);
   }
 
-  getTransformedPoint(point: Point, z: number) {
+  getTransformedPoint(absolute: boolean, point: Point, z: number) {
+    if (absolute) {
+      return point.round();
+    }
     return point
       .sub(this.camera)
       .scale(z)
-      .add(mid);
+      .add(mid)
+      .round();
   }
 
-  lines([firstPoint, ...rest]: Point[], options: Partial<CanvasRenderingContext2D>, z: number = 1) {
-    Object.assign(this.context, defaultOptions, options);
+  rect(topLeft: Point, bottomRight: Point, options?: Partial<DrawOptions>) {
+    const { absolute, r, z, ...rest } = { ...defaultOptions, ...options };
+    Object.assign(this.context, rest);
 
+    const { x: left, y: top } = this.getTransformedPoint(absolute, topLeft, z);
+    const { x: right, y: bottom } = this.getTransformedPoint(absolute, bottomRight, z);
+
+    this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.beginPath();
-    const { x, y } = this.getTransformedPoint(firstPoint, z);
-    this.context.moveTo(x, y);
-    for (const point of rest) {
-      const { x, y } = this.getTransformedPoint(point, z);
-      this.context.lineTo(x, y);
-    }
+    this.context.rect(left, top, right - left, bottom - top);
     this.context.closePath();
 
-    if (options.fillStyle) {
+    if (rest.fillStyle) {
       this.context.fill();
     }
-    if (options.strokeStyle) {
+    if (rest.strokeStyle) {
       this.context.stroke();
     }
   }
 
-  circle(mid: Point, radius: number, options: Partial<CanvasRenderingContext2D>, z: number = 1) {
-    Object.assign(this.context, defaultOptions, options);
+  image(image: HTMLCanvasElement, mid: Point, options?: Partial<DrawOptions>) {
+    const { absolute, r, z, ...rest } = { ...defaultOptions, ...options };
+    Object.assign(this.context, rest);
 
-    this.context.beginPath();
-    const { x, y } = this.getTransformedPoint(mid, z);
-    this.context.arc(x, y, radius * z, 0, Math.PI * 2);
+    const { x, y } = this.getTransformedPoint(absolute, mid, z);
+    const { width, height } = image;
 
-    if (options.fillStyle) {
-      this.context.fill();
-    }
+    const cos = Math.cos(r);
+    const sin = Math.sin(r);
+    this.context.setTransform(
+      cos,
+      sin,
+      -sin,
+      cos,
+      x * (1 - cos) + y * sin,
+      y * (1 - cos) - x * sin,
+    );
+    this.context.drawImage(image, x - width, y - height, width * imageScale, height * imageScale);
   }
 
   clear() {
