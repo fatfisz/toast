@@ -7,7 +7,7 @@ import drawBackground from './drawBackground';
 const maxFrameDuration = 20;
 
 interface Drawable {
-  draw(display: Display, toast?: Toast): void;
+  draw(display: Display, toast: Toast): void;
 }
 
 type Options = {
@@ -42,7 +42,7 @@ export function startGameLoop({ drawables, display, mouse, toast }: Options) {
 
     drawBackground(display);
     for (const drawable of drawables) {
-      drawable.draw(display);
+      drawable.draw(display, toast);
     }
     toast.draw(display);
 
