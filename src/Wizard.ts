@@ -8,23 +8,28 @@ const wizard = [
   getModel('wizard', 2),
   getModel('wizard', 3),
   getModel('wizard', 4),
-  getModel('wizard', 5),
 ];
 const mid = new Point(displayWidth / 2, displayHeight / 4);
-const startCount = 2;
+const startCount = 1;
 const restCount = wizard.length - 1 - startCount;
-const phaseDuration = 100;
+const phaseDuration = 80;
+const oscillationFrequency = 2 * Math.PI * 0.0003;
+const oscillationOffset = 8;
 
 export default class Wizard {
+  offset: number;
   phase: number;
   startTimestamp: number;
 
   constructor() {
+    this.offset = -Infinity;
     this.phase = 0;
     this.startTimestamp = 0;
   }
 
   tick(now: number, isOn: boolean) {
+    this.offset = Math.sin(now * oscillationFrequency) * oscillationOffset;
+
     if (isOn) {
       const frame = Math.floor((now - this.startTimestamp) / phaseDuration);
       if (this.phase === 0) {
@@ -41,10 +46,10 @@ export default class Wizard {
   }
 
   draw(display: Display) {
-    display.image(wizard[0], mid, { absolute: true });
-
+    const offsetMid = mid.add(new Point(0, this.offset));
+    display.image(wizard[0], offsetMid, { absolute: true });
     if (this.phase > 0) {
-      display.image(wizard[this.phase], mid, { absolute: true });
+      display.image(wizard[this.phase], offsetMid, { absolute: true });
     }
   }
 }
