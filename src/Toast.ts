@@ -60,7 +60,7 @@ export default class Toast {
     this.mid.y += this.dy * dt;
     this.r += this.dr * dt;
 
-    const dampeningFactor = 1 - dt ** -2.4;
+    const dampeningFactor = 1 - dt ** -3;
     this.dx *= dampeningFactor;
     this.dy *= dampeningFactor;
     this.dr *= dampeningFactor;
