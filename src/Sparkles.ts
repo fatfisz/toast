@@ -59,7 +59,8 @@ class Sparkle extends PointWithTimestamp {
 
   draw(display: Display, now: number) {
     const image = this.isHit ? sparkleImage.hit : sparkleImage.basic;
-    const timeBasedOpacity = getOpacity(this.isHit ? hitDuration : duration, now - this.timestamp);
+    const timeBasedOpacity =
+      getOpacity(this.isHit ? hitDuration : duration, now - this.timestamp) ** 0.5;
     const hitOpacity = this.isHit ? 1 : 0.5;
     display.image(image, new Point(this.x, this.y), {
       absolute: true,

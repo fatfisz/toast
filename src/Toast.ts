@@ -8,6 +8,8 @@ const height = toast.height * 2;
 const width = toast.width * 2;
 const gravity = 1.2;
 const gravityFactor = 0.2;
+const rotationFactor = 0.00001;
+const butterRotation = 0.05;
 const forceScale = 0.001;
 const toastInertia = 1 / 4000;
 const barrierPosition = (displayWidth * 0.4) / 2;
@@ -28,18 +30,18 @@ export default class Toast {
   r: number;
 
   constructor(x = 0, y = 0) {
-    this.dr = 0.01;
-    this.dx = 0.1;
+    this.dr = Math.sign(Math.random() - 0.5) * (Math.random() * 0.01 + 0.005);
+    this.dx = Math.sign(Math.random() - 0.5) * (Math.random() * 0.51 + 0.05);
     this.dy = 0;
     this.mid = new Point(x, y);
-    this.r = 0.4;
+    this.r = 0;
 
     withGui(gui => {
       const folder = gui.addFolder('Toast');
       folder.open();
       folder.add(this.mid, 'x');
       folder.add(this.mid, 'y');
-      folder.add(this, 'r');
+      folder.add(this, 'r').step(0.001);
       folder.add(this, 'dx').step(0.001);
       folder.add(this, 'dy').step(0.001);
       folder.add(this, 'dr').step(0.001);
@@ -60,12 +62,22 @@ export default class Toast {
     this.mid.y += this.dy * dt;
     this.r += this.dr * dt;
 
+    while (this.r > 2 * Math.PI) {
+      this.r -= 2 * Math.PI;
+    }
+    while (this.r < 0) {
+      this.r += 2 * Math.PI;
+    }
+
     const dampeningFactor = 1 - dt ** -3;
     this.dx *= dampeningFactor;
     this.dy *= dampeningFactor;
     this.dr *= dampeningFactor;
 
     this.dy = this.dy * (1 - gravityFactor) + gravity * gravityFactor;
+    this.dr =
+      this.dr * (1 - rotationFactor) +
+      Math.sign(Math.PI - this.r) * butterRotation * rotationFactor;
   }
 
   applyForce({ x, y }: Point, { x: fx, y: fy }: Point) {

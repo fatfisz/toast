@@ -7,9 +7,9 @@ interface TransformationOptions {
   z: number;
 }
 
-interface DrawOptions extends TransformationOptions, CanvasRenderingContext2D {}
+type DrawOptions = CanvasRenderingContext2D & TransformationOptions;
 
-const imageScale = 2;
+export const imageScale = 2;
 export const displayWidth = 1000;
 export const displayHeight = 1000;
 const mid = new Point(displayWidth / 2, displayHeight / 2);
@@ -84,7 +84,6 @@ export default class Display {
     Object.assign(this.context, rest);
 
     const { x, y } = this.getTransformedPoint(absolute, mid, z);
-    const { width, height } = image;
 
     const cos = Math.cos(r);
     const sin = Math.sin(r);
@@ -96,7 +95,10 @@ export default class Display {
       x * (1 - cos) + y * sin,
       y * (1 - cos) - x * sin,
     );
-    this.context.drawImage(image, x - width, y - height, width * imageScale, height * imageScale);
+
+    const width = image.width * imageScale;
+    const height = image.height * imageScale;
+    this.context.drawImage(image, x - width / 2, y - height / 2, width, height);
   }
 
   clear() {
