@@ -13,7 +13,7 @@ const mid = new Point(displayWidth / 2, displayHeight / 4);
 const startCount = 1;
 const restCount = wizard.length - 1 - startCount;
 const phaseDuration = 80;
-const oscillationFrequency = 2 * Math.PI * 0.0003;
+const oscillationFrequency = 2 * Math.PI * 0.00035;
 const oscillationOffset = 8;
 
 export default class Wizard {
