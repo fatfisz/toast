@@ -7,8 +7,8 @@ const toast = getModel('toast');
 const height = toast.height * 2;
 const width = toast.width * 2;
 const gravity = 1.2;
-const gravityFactor = 0.2;
-const rotationFactor = 0.00001;
+const gravityFactor = 0.0002;
+const rotationFactor = 0.000001;
 const butterRotation = 0.05;
 const forceScale = 0.001;
 const toastInertia = 1 / 4000;
@@ -32,7 +32,7 @@ export default class Toast {
   constructor(x = 0, y = 0) {
     this.dr = Math.sign(Math.random() - 0.5) * (Math.random() * 0.01 + 0.005);
     this.dx = Math.sign(Math.random() - 0.5) * (Math.random() * 0.51 + 0.05);
-    this.dy = 0;
+    this.dy = gravity;
     this.mid = new Point(x, y);
     this.r = 0;
 
@@ -74,10 +74,10 @@ export default class Toast {
     this.dy *= dampeningFactor;
     this.dr *= dampeningFactor;
 
-    this.dy = this.dy * (1 - gravityFactor) + gravity * gravityFactor;
+    this.dy = this.dy * (1 - gravityFactor * dt) + gravity * gravityFactor * dt;
     this.dr =
-      this.dr * (1 - rotationFactor) +
-      Math.sign(Math.PI - this.r) * butterRotation * rotationFactor;
+      this.dr * (1 - rotationFactor * dt) +
+      Math.sign(Math.PI - this.r) * butterRotation * rotationFactor * dt;
   }
 
   applyForce({ x, y }: Point, { x: fx, y: fy }: Point) {
