@@ -46,15 +46,6 @@ export default class Toast {
     });
   }
 
-  draw(display: Display) {
-    updateGui();
-    display.image(toast, this.mid, { r: this.r });
-  }
-
-  getTransformedPoints(points: Point[]) {
-    return points.map(point => point.rotate(this.r).add(this.mid));
-  }
-
   tick(dt: number) {
     this.mid.x += this.dx * dt;
     this.mid.y += this.dy * dt;
@@ -77,12 +68,6 @@ export default class Toast {
     this.dr =
       this.dr * (1 - rotationFactor * dt) +
       Math.sign(Math.PI - this.r) * butterRotation * rotationFactor * dt;
-  }
-
-  applyForce({ x, y }: Point, { x: fx, y: fy }: Point) {
-    this.dx += fx;
-    this.dy += fy;
-    this.dr += (x * fy - y * fx) * toastInertia;
   }
 
   tryApplyForce(forceVector: [Point, Point] | null) {
@@ -109,7 +94,7 @@ export default class Toast {
     return intersectionPoint;
   }
 
-  getIntersection(firstPoint: Point, lastPoint: Point) {
+  private getIntersection(firstPoint: Point, lastPoint: Point) {
     const points = this.getTransformedPoints(toastPoints);
     points.push(points[0]);
 
@@ -132,5 +117,20 @@ export default class Toast {
     }
 
     return nearestIntersection;
+  }
+
+  private getTransformedPoints(points: Point[]) {
+    return points.map(point => point.rotate(this.r).add(this.mid));
+  }
+
+  private applyForce({ x, y }: Point, { x: fx, y: fy }: Point) {
+    this.dx += fx;
+    this.dy += fy;
+    this.dr += (x * fy - y * fx) * toastInertia;
+  }
+
+  draw(display: Display) {
+    updateGui();
+    display.image(toast, this.mid, { r: this.r });
   }
 }

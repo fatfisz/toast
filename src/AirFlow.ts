@@ -19,23 +19,6 @@ export default class AirFlow {
     this.z = z;
   }
 
-  drawOne(display: Display, midPoint: Point, globalAlpha: number) {
-    display.rect(midPoint.sub(offset), midPoint.add(offset), {
-      fillStyle: getColor(26),
-      globalAlpha,
-      z: this.z,
-    });
-  }
-
-  ensurePoint(y: number) {
-    if (!this.pointCache.has(y)) {
-      this.pointCache.set(
-        y,
-        new Point(Math.random() * rangeWidth - rangeWidth / 2, y * verticalDensity),
-      );
-    }
-  }
-
   draw(display: Display, toast: Toast) {
     const minY = this.getMinimumY(display.camera);
     this.trimExcess(minY);
@@ -47,11 +30,11 @@ export default class AirFlow {
     }
   }
 
-  getMinimumY(camera: Point) {
+  private getMinimumY(camera: Point) {
     return Math.floor((camera.y - displayHeight / 2) / verticalDensity);
   }
 
-  trimExcess(minY: number) {
+  private trimExcess(minY: number) {
     for (const y of this.pointCache.keys()) {
       if (y < minY) {
         this.pointCache.delete(y);
@@ -59,11 +42,28 @@ export default class AirFlow {
     }
   }
 
-  ensureEnough(minY: number) {
+  private ensureEnough(minY: number) {
     const maxY = minY + fittingShapeCount;
 
     for (let y = minY; y <= maxY; y += 1) {
       this.ensurePoint(y);
     }
+  }
+
+  private ensurePoint(y: number) {
+    if (!this.pointCache.has(y)) {
+      this.pointCache.set(
+        y,
+        new Point(Math.random() * rangeWidth - rangeWidth / 2, y * verticalDensity),
+      );
+    }
+  }
+
+  private drawOne(display: Display, midPoint: Point, globalAlpha: number) {
+    display.rect(midPoint.sub(offset), midPoint.add(offset), {
+      fillStyle: getColor(26),
+      globalAlpha,
+      z: this.z,
+    });
   }
 }

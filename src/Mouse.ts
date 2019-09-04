@@ -28,39 +28,6 @@ export default class Mouse {
     this.wizard = new Wizard();
   }
 
-  start(event: PointEvent, display: Display) {
-    this.pressed = true;
-    this.pushPoint(event, display.canvas);
-  }
-
-  move(event: PointEvent, display: Display) {
-    if (!this.pressed) {
-      return;
-    }
-    this.pushPoint(event, display.canvas);
-  }
-
-  clearPoints() {
-    this.points = new Set();
-    this.lastPoint = null;
-  }
-
-  stop() {
-    this.clearPoints();
-    this.pressed = false;
-  }
-
-  pushPoint(event: PointEvent, canvas: HTMLCanvasElement) {
-    const { left, top, width, height } = canvas.getBoundingClientRect();
-    this.lastPoint = new PointWithTimestamp(
-      ((event.clientX - left) * displayWidth) / width,
-      ((event.clientY - top) * displayHeight) / height,
-      this.now,
-    );
-    this.points.add(this.lastPoint);
-    this.sparkles.add(this.lastPoint);
-  }
-
   init(display: Display) {
     display.canvas.addEventListener('mousedown', event => {
       event.preventDefault();
@@ -101,6 +68,34 @@ export default class Mouse {
 
   private normalizeTouchEvent(event: TouchEvent) {
     return event.touches[0];
+  }
+
+  private start(event: PointEvent, display: Display) {
+    this.pressed = true;
+    this.pushPoint(event, display.canvas);
+  }
+
+  private move(event: PointEvent, display: Display) {
+    if (!this.pressed) {
+      return;
+    }
+    this.pushPoint(event, display.canvas);
+  }
+
+  private stop() {
+    this.clearPoints();
+    this.pressed = false;
+  }
+
+  private pushPoint(event: PointEvent, canvas: HTMLCanvasElement) {
+    const { left, top, width, height } = canvas.getBoundingClientRect();
+    this.lastPoint = new PointWithTimestamp(
+      ((event.clientX - left) * displayWidth) / width,
+      ((event.clientY - top) * displayHeight) / height,
+      this.now,
+    );
+    this.points.add(this.lastPoint);
+    this.sparkles.add(this.lastPoint);
   }
 
   tick(now: number, dt: number, displayOffset: Point, toast: Toast) {
@@ -169,6 +164,11 @@ export default class Mouse {
     if (this.points.size === 0) {
       this.lastPoint = null;
     }
+  }
+
+  private clearPoints() {
+    this.points = new Set();
+    this.lastPoint = null;
   }
 
   draw(display: Display) {

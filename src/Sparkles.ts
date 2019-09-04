@@ -91,7 +91,7 @@ export default class Sparkles {
     this.updateSparkles(dt);
   }
 
-  removeOldSparkles() {
+  private removeOldSparkles() {
     const sparklesToRemove = [];
 
     for (const sparkle of this.sparkles) {
@@ -105,7 +105,7 @@ export default class Sparkles {
     }
   }
 
-  updateSparkles(dt: number) {
+  private updateSparkles(dt: number) {
     for (const sparkle of this.sparkles) {
       sparkle.tick(dt);
     }
