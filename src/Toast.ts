@@ -12,8 +12,6 @@ const rotationFactor = 0.000001;
 const butterRotation = 0.05;
 const forceScale = 0.001;
 const toastInertia = 1 / 4000;
-const barrierPosition = (displayWidth * 0.4) / 2;
-const barrierForce = 0.01;
 
 const toastPoints = [
   new Point(-width / 2, -height / 2),
@@ -60,6 +58,7 @@ export default class Toast {
   tick(dt: number) {
     this.mid.x += this.dx * dt;
     this.mid.y += this.dy * dt;
+    this.mid.wrap(-displayWidth / 2, displayWidth / 2);
     this.r += this.dr * dt;
 
     while (this.r > 2 * Math.PI) {
@@ -84,12 +83,6 @@ export default class Toast {
     this.dx += fx;
     this.dy += fy;
     this.dr += (x * fy - y * fx) * toastInertia;
-  }
-
-  ensureWithinWalls() {
-    if (Math.abs(this.mid.x) > barrierPosition) {
-      this.dx += barrierForce * -Math.sign(this.mid.x);
-    }
   }
 
   tryApplyForce(forceVector: [Point, Point] | null) {

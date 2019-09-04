@@ -48,17 +48,6 @@ export default class Display {
     return mid.sub(this.camera);
   }
 
-  getTransformedPoint(absolute: boolean, point: Point, z: number) {
-    if (absolute) {
-      return point.round();
-    }
-    return point
-      .sub(this.camera)
-      .scale(z)
-      .add(mid)
-      .round();
-  }
-
   rect(topLeft: Point, bottomRight: Point, options?: Partial<DrawOptions>) {
     const { absolute, r, z, ...rest } = { ...defaultOptions, ...options };
     Object.assign(this.context, rest);
@@ -66,7 +55,7 @@ export default class Display {
     const { x: left, y: top } = this.getTransformedPoint(absolute, topLeft, z);
     const { x: right, y: bottom } = this.getTransformedPoint(absolute, bottomRight, z);
 
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
+    this.setRotation(0);
     this.context.beginPath();
     this.context.rect(left, top, right - left, bottom - top);
     this.context.closePath();
@@ -84,7 +73,33 @@ export default class Display {
     Object.assign(this.context, rest);
 
     const { x, y } = this.getTransformedPoint(absolute, mid, z);
+    const width = image.width * imageScale;
+    const height = image.height * imageScale;
 
+    this.setRotation(r, x, y);
+    this.context.drawImage(image, x - width / 2, y - height / 2, width, height);
+
+    if (x < displayWidth / 2) {
+      this.setRotation(r, x + displayWidth, y);
+      this.context.drawImage(image, x - width / 2 + displayWidth, y - height / 2, width, height);
+    } else {
+      this.setRotation(r, x - displayWidth, y);
+      this.context.drawImage(image, x - width / 2 - displayWidth, y - height / 2, width, height);
+    }
+  }
+
+  private getTransformedPoint(absolute: boolean, point: Point, z: number) {
+    if (absolute) {
+      return point.round();
+    }
+    return point
+      .sub(this.camera)
+      .scale(z)
+      .add(mid)
+      .round();
+  }
+
+  private setRotation(r: number, x = 0, y = 0) {
     const cos = Math.cos(r);
     const sin = Math.sin(r);
     this.context.setTransform(
@@ -95,10 +110,6 @@ export default class Display {
       x * (1 - cos) + y * sin,
       y * (1 - cos) - x * sin,
     );
-
-    const width = image.width * imageScale;
-    const height = image.height * imageScale;
-    this.context.drawImage(image, x - width / 2, y - height / 2, width, height);
   }
 
   clear() {

@@ -34,6 +34,24 @@ export default class Point {
     return new Point(Math.round(this.x), Math.round(this.y));
   }
 
+  wrap(min: number, max: number) {
+    const diff = max - min;
+
+    if (process.env.NODE_ENV !== 'production') {
+      if (diff < 1) {
+        throw new Error(`max ${max} and min ${min} should be at least 1 pixel apart`);
+      }
+    }
+
+    while (this.x < min) {
+      this.x += diff;
+    }
+
+    while (this.x > max) {
+      this.x -= diff;
+    }
+  }
+
   /** Taken from http://paulbourke.net/geometry/pointlineplane/ */
   static intersection(
     { x: x1, y: y1 }: Point,

@@ -37,7 +37,6 @@ export function startGameLoop({ drawables, display, mouse, toast }: Options) {
     display.clear();
 
     toast.tick(dt);
-    toast.ensureWithinWalls();
     display.trackToast(toast);
 
     drawBackground(display);

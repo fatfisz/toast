@@ -61,10 +61,6 @@ export default class Mouse {
     this.sparkles.add(this.lastPoint);
   }
 
-  normalizeTouchEvent(event: TouchEvent) {
-    return event.touches[0];
-  }
-
   init(display: Display) {
     display.canvas.addEventListener('mousedown', event => {
       event.preventDefault();
@@ -103,13 +99,8 @@ export default class Mouse {
     });
   }
 
-  getCurrentVector(displayOffset: Point): [Point, Point] | null {
-    if (this.points.size < 2 || this.lastPoint === null) {
-      return null;
-    }
-
-    const [firstPoint] = this.points;
-    return [firstPoint.sub(displayOffset), this.lastPoint.sub(displayOffset)];
+  private normalizeTouchEvent(event: TouchEvent) {
+    return event.touches[0];
   }
 
   tick(now: number, dt: number, displayOffset: Point, toast: Toast) {
@@ -124,7 +115,7 @@ export default class Mouse {
 
     this.removeOldPoints();
 
-    const intersectionPoint = toast.tryApplyForce(this.getCurrentVector(displayOffset));
+    const intersectionPoint = this.getIntersectionPoint(toast, displayOffset);
     if (intersectionPoint !== null) {
       this.sparkles.add(
         PointWithTimestamp.fromPoint(intersectionPoint.add(displayOffset), now),
@@ -134,7 +125,35 @@ export default class Mouse {
     }
   }
 
-  removeOldPoints() {
+  private getIntersectionPoint(toast: Toast, displayOffset: Point) {
+    const intersectionPoint = toast.tryApplyForce(this.getCurrentVector(displayOffset));
+    if (intersectionPoint !== null) {
+      return intersectionPoint;
+    }
+
+    if (this.lastPoint === null) {
+      return null;
+    }
+
+    return toast.tryApplyForce(
+      this.getCurrentVector(
+        displayOffset.sub(
+          new Point(this.lastPoint.x < displayWidth / 2 ? displayWidth : -displayWidth, 0),
+        ),
+      ),
+    );
+  }
+
+  private getCurrentVector(displayOffset: Point): [Point, Point] | null {
+    if (this.points.size < 2 || this.lastPoint === null) {
+      return null;
+    }
+
+    const [firstPoint] = this.points;
+    return [firstPoint.sub(displayOffset), this.lastPoint.sub(displayOffset)];
+  }
+
+  private removeOldPoints() {
     const pointsToRemove = [];
 
     for (const point of this.points) {
