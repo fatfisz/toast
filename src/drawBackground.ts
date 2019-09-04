@@ -19,7 +19,7 @@ const groundBottomRight = new Point(groundWidth, groundHeight);
 export default function drawBackground(display: Display) {
   display.rect(skyTopLeft, skyBottomRight, {
     absolute: true,
-    fillStyle: getColor(25),
+    fillStyle: getColor(23),
   });
 
   display.image(planet, planetMid, { z: planetZ });

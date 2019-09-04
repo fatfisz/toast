@@ -3,10 +3,16 @@ import Point from './Point';
 import { getModel } from './sprites';
 
 const pillarsHeight = displayHeight * 2;
-const pillars = [getModel('pillar1'), getModel('pillar2'), getModel('pillar3')];
+const pillars = [
+  getModel('pillar1'),
+  getModel('pillar2'),
+  getModel('pillar3'),
+  getModel('pillar4'),
+  getModel('pillar5'),
+];
 const pillarZ = 0.006;
 const pillarHeight = pillarsHeight / 5 / imageScale;
-const middleOffset = 5;
+const middleOffset = 4;
 
 function drawPillar(
   context: CanvasRenderingContext2D,
