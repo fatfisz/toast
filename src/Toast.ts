@@ -29,7 +29,7 @@ export default class Toast {
 
   constructor(x = 0, y = 0) {
     this.dr = Math.sign(Math.random() - 0.5) * (Math.random() * 0.01 + 0.005);
-    this.dx = Math.sign(Math.random() - 0.5) * (Math.random() * 0.51 + 0.05);
+    this.dx = Math.sign(Math.random() - 0.5) * (Math.random() * 0.05 + 0.025);
     this.dy = gravity;
     this.mid = new Point(x, y);
     this.r = 0;
