@@ -1,3 +1,4 @@
+import AirFlow from './AirFlow';
 import Display from './Display';
 import Mouse from './Mouse';
 import Toast from './Toast';
@@ -6,19 +7,25 @@ import drawBackground from './drawBackground';
 // Prevent things going stupid when the tab is switched
 const maxFrameDuration = 20;
 
-interface Drawable {
+interface DrawableWithToast {
   draw(display: Display, toast: Toast): void;
 }
 
-type Options = {
+interface Options {
   display: Display;
-  drawables: Drawable[];
   mouse: Mouse;
-  toast: Toast;
-};
+}
 
-export function startGameLoop({ drawables, display, mouse, toast }: Options) {
-  mouse.init(display);
+export function startGameLoop({ display, mouse }: Options) {
+  const toast = new Toast();
+  const drawables: DrawableWithToast[] = [
+    new AirFlow(),
+    new AirFlow(2),
+    new AirFlow(3),
+    toast,
+    mouse,
+  ];
+
   let lastNow = 0;
   let skipFrame = true;
 
@@ -38,15 +45,12 @@ export function startGameLoop({ drawables, display, mouse, toast }: Options) {
 
     toast.tick(dt);
     display.trackToast(toast);
+    mouse.tick(now, dt, display.getOffset(), toast);
 
     drawBackground(display);
     for (const drawable of drawables) {
       drawable.draw(display, toast);
     }
-    toast.draw(display);
-
-    mouse.tick(now, dt, display.getOffset(), toast);
-    mouse.draw(display);
   }
 
   requestAnimationFrame(draw);

@@ -2,10 +2,10 @@ import models from './model.json';
 
 type Bounds2d = [number, number, number, number];
 type Bounds3d = [number, number, number, number, number, number];
-type Part = {
+interface Part {
   bounds: Bounds3d;
   data: number[];
-};
+}
 type Layers = (HTMLCanvasElement | undefined)[];
 
 const size = 128;
