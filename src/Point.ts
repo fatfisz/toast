@@ -1,3 +1,5 @@
+import { displayWidth } from './consts';
+
 export default class Point {
   x: number;
   y: number;
@@ -15,8 +17,8 @@ export default class Point {
     return new Point(this.x - x, this.y - y);
   }
 
-  scale(scale: number) {
-    return new Point(this.x * scale, this.y * scale);
+  scale(scaleX: number, scaleY = scaleX) {
+    return new Point(this.x * scaleX, this.y * scaleY);
   }
 
   rotate(angle: number) {
@@ -34,22 +36,16 @@ export default class Point {
     return new Point(Math.round(this.x), Math.round(this.y));
   }
 
-  wrap(min: number, max: number) {
-    const diff = max - min;
-
-    if (process.env.NODE_ENV !== 'production') {
-      if (diff < 1) {
-        throw new Error(`max ${max} and min ${min} should be at least 1 pixel apart`);
-      }
+  wrap() {
+    while (this.x < -displayWidth / 2) {
+      this.x += displayWidth;
     }
 
-    while (this.x < min) {
-      this.x += diff;
+    while (this.x > displayWidth / 2) {
+      this.x -= displayWidth;
     }
 
-    while (this.x > max) {
-      this.x -= diff;
-    }
+    return this;
   }
 
   /** Taken from http://paulbourke.net/geometry/pointlineplane/ */

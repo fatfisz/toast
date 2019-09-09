@@ -1,4 +1,5 @@
-import Display, { displayHeight, displayWidth } from './Display';
+import { displayHeight, displayWidth } from './consts';
+import Display from './Display';
 import Point, { PointWithTimestamp } from './Point';
 import Sparkles from './Sparkles';
 import Toast from './Toast';

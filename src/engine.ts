@@ -1,8 +1,8 @@
 import AirFlow from './AirFlow';
 import Display from './Display';
+import drawBackground from './drawBackground';
 import Mouse from './Mouse';
 import Toast from './Toast';
-import drawBackground from './drawBackground';
 
 // Prevent things going stupid when the tab is switched
 const maxFrameDuration = 20;

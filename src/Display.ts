@@ -1,3 +1,4 @@
+import { displayHeight, displayWidth, endHeight, imageScale } from './consts';
 import Point from './Point';
 import Toast from './Toast';
 
@@ -9,9 +10,6 @@ interface TransformationOptions {
 
 type DrawOptions = CanvasRenderingContext2D & TransformationOptions;
 
-export const imageScale = 2;
-export const displayWidth = 1000;
-export const displayHeight = 1000;
 const mid = new Point(displayWidth / 2, displayHeight / 2);
 const cameraOffset = displayHeight / 18;
 
@@ -41,7 +39,7 @@ export default class Display {
   }
 
   trackToast(toast: Toast) {
-    this.camera.y = toast.mid.y + cameraOffset;
+    this.camera.y = Math.min(toast.mid.y + cameraOffset, endHeight - 100);
   }
 
   getOffset() {

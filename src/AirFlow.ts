@@ -1,4 +1,5 @@
-import Display, { displayHeight, displayWidth } from './Display';
+import { displayHeight, displayWidth } from './consts';
+import Display from './Display';
 import Point from './Point';
 import { getColor } from './sprites';
 import Toast from './Toast';

@@ -1,4 +1,5 @@
-import Display, { displayHeight, displayWidth, imageScale } from './Display';
+import { displayHeight, displayWidth, imageScale } from './consts';
+import Display from './Display';
 import Point from './Point';
 import { getModel } from './sprites';
 
