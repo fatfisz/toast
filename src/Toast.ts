@@ -138,7 +138,7 @@ export default class Toast {
           (dt / 100) *
           toastInertia *
           Math.sign(relativeCollisionPoint.x) *
-          Math.max(endHeight - intersection.y, 0) ** 0.5;
+          Math.max(endHeight - intersection.y, 0) ** 0.6;
       }
     }
 
