@@ -1,4 +1,4 @@
-import { displayWidth, endHeight } from './consts';
+import { displayWidth, endHeight, slowEndHeight, slowStartHeight } from './consts';
 import Display from './Display';
 import { updateGui, withGui } from './gui';
 import Point from './Point';
@@ -8,7 +8,7 @@ const toast = getModel('toast');
 const height = toast.height * 2;
 const width = toast.width * 2;
 const gravity = 1.2;
-const gravityFactor = 0.0002;
+const gravityFactor = 0.002;
 const rotationFactor = 0.000001;
 const butterRotation = 0.05;
 const forceScale = 0.001;
@@ -73,15 +73,15 @@ export default class Toast {
       this.r += this.dr * dt;
       this.wrap();
 
-      const dampeningFactor = 1 - dt ** -3;
-      this.dx *= dampeningFactor;
-      this.dy *= dampeningFactor;
-      this.dr *= dampeningFactor;
-
       this.dy = this.dy * (1 - gravityFactor * dt) + gravity * gravityFactor * dt;
       this.dr =
         this.dr * (1 - rotationFactor * dt) +
         Math.sign(Math.PI - this.r) * butterRotation * rotationFactor * dt;
+
+      const dampeningFactor = 1 - dt ** this.getDampeningPower();
+      this.dx *= dampeningFactor;
+      this.dy *= dampeningFactor;
+      this.dr *= dampeningFactor;
 
       if (this.isColliding()) {
         const [point, dtLeft] = this.findCollisionPoint(prevX, prevY, prevR, dt);
@@ -89,6 +89,16 @@ export default class Toast {
         this.handleCollision(this.collisionPoint, dtLeft);
       }
     }
+  }
+
+  private getDampeningPower() {
+    const multiplier =
+      this.mid.y < slowStartHeight
+        ? 1
+        : this.mid.y < slowEndHeight
+        ? ((slowEndHeight - this.mid.y) / (slowEndHeight - slowStartHeight)) ** 0.6
+        : 1;
+    return -3 * multiplier;
   }
 
   private isColliding(): boolean {

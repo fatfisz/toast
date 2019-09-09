@@ -3,7 +3,7 @@ import Display from './Display';
 import Point from './Point';
 import { getModel } from './sprites';
 
-const pillarsHeight = displayHeight * 2;
+const pillarsHeight = displayHeight * 1.5;
 const pillars = [
   getModel('pillar1'),
   getModel('pillar2'),
@@ -11,7 +11,7 @@ const pillars = [
   getModel('pillar4'),
   getModel('pillar5'),
 ];
-const pillarZ = 0.006;
+const pillarZ = 0.02;
 const pillarHeight = pillarsHeight / 5 / imageScale;
 const middleOffset = 4;
 
@@ -49,12 +49,12 @@ function drawPillar(
 
 function getPillarPoints() {
   const pillarPoints: [Point, HTMLCanvasElement][] = [];
-  const minY = pillarsHeight / 4;
+  const minY = pillarsHeight / 6;
   const maxY = pillarsHeight / 2;
   const yExtra = pillarsHeight - maxY;
   const yStep = 16;
   const yNoise = 12;
-  const xOffset = 100;
+  const xOffset = 50;
   const minX = 0;
   const maxX = displayWidth;
   const xStep = 36;
@@ -62,7 +62,11 @@ function getPillarPoints() {
   const threshold = 0.75;
 
   for (let y = minY; y < maxY + yExtra; y += yStep) {
-    for (let x = minX - xOffset; x < maxX + xOffset; x += xStep + Math.random() * xStepNoise) {
+    for (
+      let x = minX - Math.random() * xOffset;
+      x < maxX + xOffset;
+      x += xStep + Math.random() * xStepNoise
+    ) {
       const niceY = 1 - (y / maxY) ** 5;
       const niceX = Math.abs(x - maxX / 2) / (maxX / 2);
       if (niceX > niceY && Math.random() < threshold) {
