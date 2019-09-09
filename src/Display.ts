@@ -39,7 +39,7 @@ export default class Display {
   }
 
   trackToast(toast: Toast) {
-    this.camera.y = Math.min(toast.mid.y + cameraOffset, endHeight - 100);
+    this.camera.y = Math.min(endHeight - displayHeight / 4, toast.mid.y + cameraOffset);
   }
 
   getOffset() {
