@@ -96,7 +96,7 @@ export default class Toast {
       this.mid.y < slowStartHeight
         ? 1
         : this.mid.y < slowEndHeight
-        ? ((slowEndHeight - this.mid.y) / (slowEndHeight - slowStartHeight)) ** 0.6
+        ? ((slowEndHeight - this.mid.y) / (slowEndHeight - slowStartHeight)) ** 0.5 * 0.8
         : 1;
     return -3 * multiplier;
   }

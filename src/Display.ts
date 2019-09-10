@@ -1,4 +1,11 @@
-import { displayHeight, displayWidth, endHeight, imageScale } from './consts';
+import {
+  displayHeight,
+  displayWidth,
+  endHeight,
+  imageScale,
+  slowEndHeight,
+  slowStartHeight,
+} from './consts';
 import Point from './Point';
 import Toast from './Toast';
 
@@ -11,7 +18,8 @@ interface TransformationOptions {
 type DrawOptions = CanvasRenderingContext2D & TransformationOptions;
 
 const mid = new Point(displayWidth / 2, displayHeight / 2);
-const cameraOffset = displayHeight / 18;
+const cameraOffset = displayHeight / 15;
+const cameraEnd = endHeight - displayHeight / 3;
 
 const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions = {
   absolute: false,
@@ -28,6 +36,7 @@ export default class Display {
   camera: Point;
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
+  dy: number;
 
   constructor() {
     this.camera = new Point(0, cameraOffset);
@@ -36,10 +45,21 @@ export default class Display {
     this.canvas.height = displayHeight;
     this.context = canvas.getContext('2d') as CanvasRenderingContext2D;
     this.context.imageSmoothingEnabled = false;
+    this.dy = 0;
   }
 
   trackToast(toast: Toast) {
-    this.camera.y = Math.min(endHeight - displayHeight / 4, toast.mid.y + cameraOffset);
+    const toastY = toast.mid.y;
+    const alpha = Math.max(
+      Math.min((toastY - slowStartHeight) / (slowEndHeight - slowStartHeight), 1),
+      0,
+    );
+    const nextY = Math.min(
+      cameraEnd * alpha + (toastY + cameraOffset) * (1 - alpha),
+      toastY + cameraOffset,
+    );
+    this.dy = nextY - this.camera.y;
+    this.camera.y = nextY;
   }
 
   getOffset() {

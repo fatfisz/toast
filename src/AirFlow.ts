@@ -2,7 +2,6 @@ import { displayHeight, displayWidth } from './consts';
 import Display from './Display';
 import Point from './Point';
 import { getColor } from './sprites';
-import Toast from './Toast';
 
 const width = 1;
 const height = 40;
@@ -20,12 +19,12 @@ export default class AirFlow {
     this.z = z;
   }
 
-  draw(display: Display, toast: Toast) {
+  draw(display: Display) {
     const minY = this.getMinimumY(display.camera);
     this.trimExcess(minY);
     this.ensureEnough(minY);
 
-    const alpha = Math.min(Math.abs(toast.dy) * 0.15, 1);
+    const alpha = Math.min(Math.abs(display.dy) * 0.01, 1);
     for (const point of this.pointCache.values()) {
       this.drawOne(display, point, alpha);
     }
