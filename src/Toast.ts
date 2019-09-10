@@ -1,4 +1,4 @@
-import { displayWidth, endHeight, slowEndHeight, slowStartHeight } from './consts';
+import { displayWidth, finishDepth, finishFreeFallDepth, plateDepth } from './consts';
 import Display from './Display';
 import { updateGui, withGui } from './gui';
 import Point from './Point';
@@ -25,7 +25,7 @@ const toastPoints = [
 ];
 
 function isPointOutside(point: Point) {
-  return point.y > endHeight;
+  return point.y > plateDepth;
 }
 
 export default class Toast {
@@ -93,10 +93,10 @@ export default class Toast {
 
   private getDampeningPower() {
     const multiplier =
-      this.mid.y < slowStartHeight
+      this.mid.y < finishDepth
         ? 1
-        : this.mid.y < slowEndHeight
-        ? ((slowEndHeight - this.mid.y) / (slowEndHeight - slowStartHeight)) ** 0.5 * 0.8
+        : this.mid.y < finishFreeFallDepth
+        ? ((finishFreeFallDepth - this.mid.y) / (finishFreeFallDepth - finishDepth)) ** 0.5 * 0.8
         : 1;
     return -3 * multiplier;
   }
@@ -127,8 +127,8 @@ export default class Toast {
       }
     }
 
-    this.mid.y += endHeight - collisionPoint.y;
-    collisionPoint.y = endHeight;
+    this.mid.y += plateDepth - collisionPoint.y;
+    collisionPoint.y = plateDepth;
 
     return [collisionPoint, dt - b];
   }
@@ -142,13 +142,13 @@ export default class Toast {
       this.dr = toastInertia * -Math.sign(relativeCollisionPoint.x);
       this.lastPhase = true;
     } else {
-      const intersection = this.getIntersection(this.mid, new Point(this.mid.x, endHeight + 1));
+      const intersection = this.getIntersection(this.mid, new Point(this.mid.x, plateDepth + 1));
       if (intersection !== null) {
         this.dr -=
           (dt / 100) *
           toastInertia *
           Math.sign(relativeCollisionPoint.x) *
-          Math.max(endHeight - intersection.y, 0) ** 0.6;
+          Math.max(plateDepth - intersection.y, 0) ** 0.6;
       }
     }
 
@@ -158,7 +158,7 @@ export default class Toast {
     if (Math.sign(this.r - rightAngle) === Math.sign(this.r + dr - rightAngle) || forceMove) {
       const diff = relativeCollisionPoint.rotate(dr).sub(relativeCollisionPoint);
       this.mid = this.mid.sub(diff);
-      this.mid.y = Math.min(this.mid.y, endHeight - height / 2);
+      this.mid.y = Math.min(this.mid.y, plateDepth - height / 2);
       this.r += dr;
       this.wrap();
     } else {
@@ -172,7 +172,7 @@ export default class Toast {
 
       if (Math.abs(this.dr) < finalPhaseRotationThreshold) {
         this.dr = 0;
-        this.collisionPoint = new Point(this.mid.x, endHeight);
+        this.collisionPoint = new Point(this.mid.x, plateDepth);
       }
 
       this.handleCollision(this.collisionPoint, dt - dtToRightAngle, true);
@@ -264,8 +264,8 @@ export default class Toast {
     display.image(toast, this.mid, { r: this.r });
 
     display.rect(
-      new Point(-displayWidth / 2, endHeight - 1),
-      new Point(displayWidth / 2, endHeight + 1),
+      new Point(-displayWidth / 2, plateDepth - 1),
+      new Point(displayWidth / 2, plateDepth + 1),
       { fillStyle: 'hotpink' },
     );
   }

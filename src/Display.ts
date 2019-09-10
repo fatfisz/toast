@@ -1,10 +1,10 @@
 import {
   displayHeight,
   displayWidth,
-  endHeight,
+  finishDepth,
+  finishFreeFallDepth,
   imageScale,
-  slowEndHeight,
-  slowStartHeight,
+  plateDepth,
 } from './consts';
 import Point from './Point';
 import Toast from './Toast';
@@ -19,7 +19,7 @@ type DrawOptions = CanvasRenderingContext2D & TransformationOptions;
 
 const mid = new Point(displayWidth / 2, displayHeight / 2);
 const cameraOffset = displayHeight / 15;
-const cameraEnd = endHeight - displayHeight / 3;
+const cameraEnd = plateDepth - displayHeight / 3;
 
 const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions = {
   absolute: false,
@@ -51,7 +51,7 @@ export default class Display {
   trackToast(toast: Toast) {
     const toastY = toast.mid.y;
     const alpha = Math.max(
-      Math.min((toastY - slowStartHeight) / (slowEndHeight - slowStartHeight), 1),
+      Math.min((toastY - finishDepth) / (finishFreeFallDepth - finishDepth), 1),
       0,
     );
     const nextY = Math.min(
