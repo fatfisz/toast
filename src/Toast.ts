@@ -1,12 +1,10 @@
-import { displayWidth, finishDepth, finishFreeFallDepth, plateDepth } from './consts';
+import { finishDepth, finishFreeFallDepth, plateDepth, toastHeight, toastWidth } from './consts';
 import Display from './Display';
 import { updateGui, withGui } from './gui';
 import Point from './Point';
 import { getModel } from './sprites';
 
 const toast = getModel('toast');
-const height = toast.height * 2;
-const width = toast.width * 2;
 const gravity = 1.2;
 const gravityFactor = 0.002;
 const rotationFactor = 0.000001;
@@ -18,10 +16,10 @@ const standingDampeningFactor = 0.2;
 const finalPhaseRotationThreshold = 0.00001;
 
 const toastPoints = [
-  new Point(-width / 2, -height / 2),
-  new Point(-width / 2, height / 2),
-  new Point(width / 2, height / 2),
-  new Point(width / 2, -height / 2),
+  new Point(-toastWidth / 2, -toastHeight / 2),
+  new Point(-toastWidth / 2, toastHeight / 2),
+  new Point(toastWidth / 2, toastHeight / 2),
+  new Point(toastWidth / 2, -toastHeight / 2),
 ];
 
 function isPointOutside(point: Point) {
@@ -158,7 +156,7 @@ export default class Toast {
     if (Math.sign(this.r - rightAngle) === Math.sign(this.r + dr - rightAngle) || forceMove) {
       const diff = relativeCollisionPoint.rotate(dr).sub(relativeCollisionPoint);
       this.mid = this.mid.sub(diff);
-      this.mid.y = Math.min(this.mid.y, plateDepth - height / 2);
+      this.mid.y = Math.min(this.mid.y, plateDepth - toastHeight / 2);
       this.r += dr;
       this.wrap();
     } else {
@@ -262,11 +260,5 @@ export default class Toast {
   draw(display: Display) {
     updateGui();
     display.image(toast, this.mid, { r: this.r });
-
-    display.rect(
-      new Point(-displayWidth / 2, plateDepth - 1),
-      new Point(displayWidth / 2, plateDepth + 1),
-      { fillStyle: 'hotpink' },
-    );
   }
 }

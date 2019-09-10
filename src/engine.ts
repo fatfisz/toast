@@ -1,6 +1,7 @@
 import AirFlow from './AirFlow';
 import Display from './Display';
 import drawBackground from './drawBackground';
+import FinishingLine from './FinishingLine';
 import Mouse from './Mouse';
 import Toast from './Toast';
 
@@ -18,11 +19,13 @@ interface Options {
 
 export function startGameLoop({ display, mouse }: Options) {
   const toast = new Toast();
+  const finishingLine = new FinishingLine();
   const drawables: DrawableWithToast[] = [
     new AirFlow(),
     new AirFlow(2),
     new AirFlow(3),
     toast,
+    finishingLine,
     mouse,
   ];
 
@@ -44,6 +47,7 @@ export function startGameLoop({ display, mouse }: Options) {
     display.clear();
 
     toast.tick(dt);
+    finishingLine.tick(now);
     display.trackToast(toast);
     mouse.tick(now, dt, display.getOffset(), toast);
 

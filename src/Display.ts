@@ -19,7 +19,7 @@ type DrawOptions = CanvasRenderingContext2D & TransformationOptions;
 
 const mid = new Point(displayWidth / 2, displayHeight / 2);
 const cameraOffset = displayHeight / 15;
-const cameraEnd = plateDepth - displayHeight / 3;
+const cameraEnd = plateDepth - displayHeight / 2 + 20 * imageScale;
 
 const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions = {
   absolute: false,
