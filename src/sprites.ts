@@ -1,14 +1,14 @@
 import models from './model.json';
 
+type Size = [number, number];
 type Bounds2d = [number, number, number, number];
 type Bounds3d = [number, number, number, number, number, number];
 interface Part {
   bounds: Bounds3d;
   data: number[];
+  size: Size;
 }
 type Layers = (HTMLCanvasElement | undefined)[];
-
-const size = 128;
 
 function unfoldArray(data: number[]) {
   const unfoldedData: number[] = [];
@@ -26,8 +26,8 @@ function unfoldArray(data: number[]) {
   return unfoldedData;
 }
 
-function getColorIndex(data: number[], x: number, y: number, z: number) {
-  return data[x + y * size + z * size * size];
+function getColorIndex({ data, size }: Part, x: number, y: number, z: number) {
+  return data[x + y * size[0] + z * size[0] * size[1]];
 }
 
 function unpackColor(colorNumber: number) {
@@ -55,23 +55,24 @@ function putColorFromPalette(
   data[index + 3] = 255;
 }
 
-function getCanvasForLayer(data: number[], bounds: Bounds2d, layer: number, palette: number[]) {
-  const width = bounds[1] - bounds[0] + 1;
-  const height = bounds[3] - bounds[2] + 1;
+function getCanvasForLayer(part: Part, bounds: Bounds2d, layer: number, palette: number[]) {
+  const [width, height] = part.size;
+  const boundsWidth = bounds[1] - bounds[0] + 1;
+  const boundsHeight = bounds[3] - bounds[2] + 1;
 
   const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = boundsWidth;
+  canvas.height = boundsHeight;
   const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-  const imageData = context.createImageData(size, size);
+  const imageData = context.createImageData(width, height);
 
   for (let x = bounds[0]; x <= bounds[1]; x += 1) {
     for (let y = bounds[2]; y <= bounds[3]; y += 1) {
       putColorFromPalette(
         imageData.data,
-        (x + y * size) * 4,
+        (x + y * width) * 4,
         palette,
-        getColorIndex(data, x, y, layer),
+        getColorIndex(part, x, y, layer),
       );
     }
   }
@@ -81,11 +82,12 @@ function getCanvasForLayer(data: number[], bounds: Bounds2d, layer: number, pale
   return canvas;
 }
 
-function getCanvases({ bounds, data }: Part, palette: number[]) {
+function getCanvases(part: Part, palette: number[]) {
   const layers: Layers = [];
+  const { bounds } = part;
 
   for (let layer = bounds[4]; layer <= bounds[5]; layer += 1) {
-    layers[layer] = getCanvasForLayer(data, (bounds as any) as Bounds2d, layer, palette);
+    layers[layer] = getCanvasForLayer(part, (bounds as any) as Bounds2d, layer, palette);
   }
 
   return layers;
