@@ -4,6 +4,7 @@ import nodeResolve from 'rollup-plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
 import { terser } from 'rollup-plugin-terser';
 
+import prependHtml from './rollup-plugins/prependHtml';
 import stripSpriteStack from './rollup-plugins/stripSpriteStack';
 
 export default {
@@ -25,9 +26,10 @@ export default {
     terser({
       toplevel: true,
     }),
+    prependHtml({}),
   ],
   output: {
-    file: 'main.js',
+    file: 'index.html',
     format: 'cjs',
   },
 };

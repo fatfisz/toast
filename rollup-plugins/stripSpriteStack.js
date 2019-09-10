@@ -28,7 +28,7 @@ export default function replace(options = {}) {
         delete part.hidden;
       }
 
-      return { code: JSON.stringify(parsed) };
+      return JSON.stringify(parsed);
     },
   };
 }
