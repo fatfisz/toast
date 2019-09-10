@@ -5,11 +5,11 @@ import { getModel } from './sprites';
 
 const pillarsHeight = displayHeight * 1.5;
 const pillars = [
-  getModel('pillar1'),
-  getModel('pillar2'),
-  getModel('pillar3'),
-  getModel('pillar4'),
-  getModel('pillar5'),
+  getModel('pillar'),
+  getModel('pillar', 1),
+  getModel('pillar', 2),
+  getModel('pillar', 3),
+  getModel('pillar', 4),
 ];
 const pillarZ = 0.02;
 const pillarHeight = pillarsHeight / 5 / imageScale;
