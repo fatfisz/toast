@@ -188,7 +188,7 @@ export default class Toast {
   }
 
   tryApplyForce(forceVector: [Point, Point] | null) {
-    if (forceVector === null) {
+    if (forceVector === null || this.mid.y >= finishDepth) {
       return null;
     }
 
