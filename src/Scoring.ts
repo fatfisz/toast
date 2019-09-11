@@ -37,20 +37,20 @@ export default class Scoring {
     this.drawWizardWithBubble(
       displaySize * 0.25,
       0,
-      'i liked how it was almost close.\n8 points from me.',
+      'soon i will be saying something sarcastic.\ni like precision.',
     );
 
     this.drawWizardWithBubble(
       displaySize * 0.5,
       1,
-      'i liked how it was almost close.\n8 points from me.',
+      "i'm not even sure why i'm here.\nthat toast looks delicious though.\nit will be enough if it just lands butter up.",
       true,
     );
 
     this.drawWizardWithBubble(
       displaySize * 0.75,
       2,
-      'i liked how it was almost close.\n8 points from me.',
+      "oh, young'uns these days!\nno appreciation for the form.\n\nwhat point is there to be precise if it looks plain\nawful in the end?",
     );
   }
 
