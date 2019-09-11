@@ -56,13 +56,7 @@ export default class Scoring {
 
   private drawWizardWithBubble(y: number, wizardIndex: number, text: string, isRight?: boolean) {
     const midY = y - halfWizardBubbleSize;
-    this.drawWizard(
-      isRight
-        ? displaySize - wizardOffset - halfWizardBubbleSize
-        : wizardOffset + halfWizardBubbleSize,
-      midY,
-      wizardIndex,
-    );
+    this.drawWizard(wizardOffset + halfWizardBubbleSize, midY, wizardIndex, isRight);
     drawTextBubble(
       this.context,
       text,
@@ -73,7 +67,9 @@ export default class Scoring {
     );
   }
 
-  private drawWizard(midX: number, y: number, wizardIndex: number) {
+  private drawWizard(midX: number, y: number, wizardIndex: number, isRight?: boolean) {
+    this.context.setTransform(isRight ? -1 : 1, 0, 0, 1, isRight ? displaySize : 0, 0);
+
     drawBubble(
       this.context,
       midX - halfWizardBubbleSize,
@@ -92,6 +88,8 @@ export default class Scoring {
       image.width * imageScale,
       image.height * imageScale,
     );
+
+    this.context.setTransform(1, 0, 0, 1, 0, 0);
   }
 
   draw(display: Display) {
