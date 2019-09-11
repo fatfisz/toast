@@ -8,6 +8,15 @@ import { getColor, getModel } from './sprites';
 const glowPeriod = 1500;
 const brickHeight = getModel('brick').height * imageScale;
 
+const firstStop = -displayWidth / 2;
+const stops: [number, string][] = [
+  [-(plateWidth + toastWidth) / 2, getColor(11)],
+  [-plateWidth / 2, getColor(17)],
+  [plateWidth / 2, getColor(6)],
+  [(plateWidth + toastWidth) / 2, getColor(17)],
+  [displayWidth / 2, getColor(11)],
+];
+
 export default class FinishingLine {
   glowIntensity: number;
 
@@ -22,35 +31,16 @@ export default class FinishingLine {
     );
   }
 
-  drawGlowyRect(display: Display, topLeft: Point, bottomRight: Point, glowColor: string) {
-    display.rect(topLeft, bottomRight, {
-      fillStyle: glowColor,
-      globalAlpha: 0.4 + this.glowIntensity * 0.4,
-    });
-  }
-
   draw(display: Display) {
     drawBricks(display);
 
-    this.drawGlowyRect(
-      display,
-      new Point(-displayWidth / 2, plateDepth),
-      new Point(displayWidth / 2, plateDepth + brickHeight),
-      getColor(11),
-    );
-
-    this.drawGlowyRect(
-      display,
-      new Point(-(plateWidth + toastWidth) / 2, plateDepth),
-      new Point((plateWidth + toastWidth) / 2, plateDepth + brickHeight),
-      getColor(17),
-    );
-
-    this.drawGlowyRect(
-      display,
-      new Point(-plateWidth / 2, plateDepth),
-      new Point(plateWidth / 2, plateDepth + brickHeight),
-      getColor(6),
-    );
+    let lastX = firstStop;
+    for (const [x, color] of stops) {
+      display.rect(new Point(lastX, plateDepth), new Point(x, plateDepth + brickHeight), {
+        fillStyle: color,
+        globalAlpha: 0.4 + this.glowIntensity * 0.3,
+      });
+      lastX = x;
+    }
   }
 }
