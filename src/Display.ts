@@ -1,4 +1,5 @@
 import { displaySize, finishDepth, finishFreeFallDepth, imageScale, plateDepth } from './consts';
+import getCanvas from './getCanvas';
 import Point from './Point';
 import Toast from './Toast';
 
@@ -29,8 +30,6 @@ const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions 
   z: 1,
 };
 
-declare let canvas: HTMLCanvasElement;
-
 export default class Display {
   camera: Point;
   canvas: HTMLCanvasElement;
@@ -39,11 +38,8 @@ export default class Display {
 
   constructor() {
     this.camera = new Point(0, cameraOffset);
-    this.canvas = canvas;
-    this.canvas.width = displaySize;
-    this.canvas.height = displaySize;
-    this.context = canvas.getContext('2d') as CanvasRenderingContext2D;
-    this.context.imageSmoothingEnabled = false;
+    [this.canvas, this.context] = getCanvas(displaySize, displaySize);
+    document.body.appendChild(this.canvas);
     this.dy = 0;
   }
 
