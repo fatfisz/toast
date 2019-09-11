@@ -1,13 +1,12 @@
-import { imageScale, plateDepth, toastWidth, displayWidth, displayHeight } from './consts';
+import { displayWidth, imageScale, plateDepth, plateWidth, toastWidth } from './consts';
 import Display from './Display';
+import drawBricks from './drawBricks';
 import Point from './Point';
 import roundToSteps from './roundToSteps';
-import { getColor } from './sprites';
+import { getColor, getModel } from './sprites';
 
-const plateHeight = 5 * imageScale;
-const plateWidth = toastWidth * 1.1;
 const glowPeriod = 1500;
-const downBelow = plateDepth + displayHeight / 4;
+const brickHeight = getModel('brick').height * imageScale;
 
 export default class FinishingLine {
   glowIntensity: number;
@@ -23,42 +22,35 @@ export default class FinishingLine {
     );
   }
 
-  drawGlowyRect(
-    display: Display,
-    topLeft: Point,
-    bottomRight: Point,
-    baseColor: string,
-    glowColor: string,
-  ) {
-    display.rect(topLeft, bottomRight, { fillStyle: baseColor });
-    display.rect(topLeft, bottomRight, { fillStyle: glowColor, globalAlpha: this.glowIntensity });
+  drawGlowyRect(display: Display, topLeft: Point, bottomRight: Point, glowColor: string) {
+    display.rect(topLeft, bottomRight, {
+      fillStyle: glowColor,
+      globalAlpha: 0.4 + this.glowIntensity * 0.4,
+    });
   }
 
   draw(display: Display) {
-    display.rect(new Point(-displayWidth / 2, plateDepth), new Point(displayWidth / 2, downBelow), {
-      fillStyle: getColor(4),
-    });
+    drawBricks(display);
+
+    this.drawGlowyRect(
+      display,
+      new Point(-displayWidth / 2, plateDepth),
+      new Point(displayWidth / 2, plateDepth + brickHeight),
+      getColor(11),
+    );
+
+    this.drawGlowyRect(
+      display,
+      new Point(-(plateWidth + toastWidth) / 2, plateDepth),
+      new Point((plateWidth + toastWidth) / 2, plateDepth + brickHeight),
+      getColor(17),
+    );
 
     this.drawGlowyRect(
       display,
       new Point(-plateWidth / 2, plateDepth),
-      new Point(plateWidth / 2, plateDepth + plateHeight),
-      getColor(5),
+      new Point(plateWidth / 2, plateDepth + brickHeight),
       getColor(6),
-    );
-    this.drawGlowyRect(
-      display,
-      new Point(-displayWidth / 2, plateDepth),
-      new Point(-(plateWidth + toastWidth) / 2, downBelow),
-      getColor(10),
-      getColor(11),
-    );
-    this.drawGlowyRect(
-      display,
-      new Point((plateWidth + toastWidth) / 2, plateDepth),
-      new Point(displayWidth / 2, downBelow),
-      getColor(10),
-      getColor(11),
     );
   }
 }

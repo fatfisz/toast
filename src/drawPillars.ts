@@ -15,36 +15,30 @@ const pillarZ = 0.02;
 const pillarHeight = pillarsHeight / 5 / imageScale;
 const middleOffset = 4;
 
-function drawPillar(
-  context: CanvasRenderingContext2D,
-  pillarImage: HTMLCanvasElement,
-  x: number,
-  y: number,
-) {
-  const { width, height } = pillarImage;
-  context.drawImage(
-    pillarImage,
-    0,
-    middleOffset + 1,
-    width,
-    height,
-    x,
-    y + middleOffset + pillarHeight,
-    width,
-    height,
-  );
-  context.drawImage(
-    pillarImage,
-    0,
-    middleOffset,
-    width,
-    1,
-    x,
-    y + middleOffset,
-    width,
-    pillarHeight,
-  );
-  context.drawImage(pillarImage, x, y);
+const canvas = document.createElement('canvas');
+
+export default function drawPillars(display: Display) {
+  display.image(canvas, new Point(0, (pillarsHeight + displayHeight / 3) / 2 / pillarZ), {
+    z: pillarZ,
+  });
+}
+
+function init() {
+  const pillarPoints = getPillarPoints();
+
+  canvas.width = displayWidth / imageScale;
+  canvas.height = pillarsHeight / imageScale;
+  const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+  context.imageSmoothingEnabled = false;
+
+  for (const [point, image] of pillarPoints) {
+    drawPillar(
+      context,
+      image,
+      (point.x - image.width) / imageScale,
+      (point.y - image.height) / imageScale,
+    );
+  }
 }
 
 function getPillarPoints() {
@@ -81,30 +75,36 @@ function getPillarPoints() {
   return pillarPoints;
 }
 
-const canvas = document.createElement('canvas');
-
-export function drawPillars(display: Display) {
-  display.image(canvas, new Point(0, (pillarsHeight + displayHeight / 3) / 2 / pillarZ), {
-    z: pillarZ,
-  });
-}
-
-function init() {
-  const pillarPoints = getPillarPoints();
-
-  canvas.width = displayWidth / imageScale;
-  canvas.height = pillarsHeight / imageScale;
-  const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-  context.imageSmoothingEnabled = false;
-
-  for (const [point, image] of pillarPoints) {
-    drawPillar(
-      context,
-      image,
-      (point.x - image.width) / imageScale,
-      (point.y - image.height) / imageScale,
-    );
-  }
+function drawPillar(
+  context: CanvasRenderingContext2D,
+  pillarImage: HTMLCanvasElement,
+  x: number,
+  y: number,
+) {
+  const { width, height } = pillarImage;
+  context.drawImage(
+    pillarImage,
+    0,
+    middleOffset + 1,
+    width,
+    height,
+    x,
+    y + middleOffset + pillarHeight,
+    width,
+    height,
+  );
+  context.drawImage(
+    pillarImage,
+    0,
+    middleOffset,
+    width,
+    1,
+    x,
+    y + middleOffset,
+    width,
+    pillarHeight,
+  );
+  context.drawImage(pillarImage, x, y);
 }
 
 init();

@@ -1,6 +1,6 @@
 import { displayHeight, displayWidth } from './consts';
 import Display from './Display';
-import { drawPillars } from './drawPillars';
+import drawPillars from './drawPillars';
 import Point from './Point';
 import { getColor, getModel } from './sprites';
 

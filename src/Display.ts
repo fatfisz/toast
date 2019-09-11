@@ -12,6 +12,10 @@ import Toast from './Toast';
 interface TransformationOptions {
   absolute: boolean;
   r: number;
+  snapToBottom?: boolean;
+  snapToLeft?: boolean;
+  snapToRight?: boolean;
+  snapToTop?: boolean;
   z: number;
 }
 
@@ -87,7 +91,10 @@ export default class Display {
   }
 
   image(image: HTMLCanvasElement, mid: Point, options?: Partial<DrawOptions>) {
-    const { absolute, r, z, ...rest } = { ...defaultOptions, ...options };
+    const { absolute, r, snapToBottom, snapToLeft, snapToRight, snapToTop, z, ...rest } = {
+      ...defaultOptions,
+      ...options,
+    };
     Object.assign(this.context, rest);
 
     const { x, y } = this.getTransformedPoint(absolute, mid, z);
@@ -95,14 +102,16 @@ export default class Display {
     const height = image.height * imageScale;
 
     this.setRotation(r, x, y);
-    this.context.drawImage(image, x - width / 2, y - height / 2, width, height);
+    const offsetLeft = snapToLeft ? 0 : snapToRight ? -width : -width / 2;
+    const offsetTop = snapToTop ? 0 : snapToBottom ? -height : -height / 2;
+    this.context.drawImage(image, x + offsetLeft, y + offsetTop, width, height);
 
     if (x < displayWidth / 2) {
       this.setRotation(r, x + displayWidth, y);
-      this.context.drawImage(image, x - width / 2 + displayWidth, y - height / 2, width, height);
+      this.context.drawImage(image, x + offsetLeft + displayWidth, y + offsetTop, width, height);
     } else {
       this.setRotation(r, x - displayWidth, y);
-      this.context.drawImage(image, x - width / 2 - displayWidth, y - height / 2, width, height);
+      this.context.drawImage(image, x + offsetLeft - displayWidth, y + offsetTop, width, height);
     }
   }
 
@@ -117,7 +126,7 @@ export default class Display {
       .round();
   }
 
-  private setRotation(r: number, x = 0, y = 0) {
+  private setRotation(r: number, centerX = 0, centerY = 0) {
     const cos = Math.cos(r);
     const sin = Math.sin(r);
     this.context.setTransform(
@@ -125,8 +134,8 @@ export default class Display {
       sin,
       -sin,
       cos,
-      x * (1 - cos) + y * sin,
-      y * (1 - cos) - x * sin,
+      centerX * (1 - cos) + centerY * sin,
+      centerY * (1 - cos) - centerX * sin,
     );
   }
 

@@ -10,3 +10,4 @@ export const plateDepth = finishFreeFallDepth + 150;
 const toast = getModel('toast');
 export const toastHeight = toast.height * imageScale;
 export const toastWidth = toast.width * imageScale;
+export const plateWidth = toastWidth;
