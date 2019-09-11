@@ -1,4 +1,4 @@
-import { displayWidth, imageScale, plateDepth } from './consts';
+import { displaySize, imageScale, plateDepth } from './consts';
 import Display from './Display';
 import getCanvas from './getCanvas';
 import Point from './Point';
@@ -11,7 +11,7 @@ const middleOffset = 2;
 const { height } = brick;
 const rows = 15;
 
-const [canvas, context] = getCanvas(displayWidth / imageScale, rows * height);
+const [canvas, context] = getCanvas(displaySize / imageScale, rows * height);
 
 export default function drawBricks(display: Display) {
   display.image(canvas, new Point(0, plateDepth), { snapToTop: true });
@@ -30,7 +30,7 @@ const xStepNoise = 4;
 
 function getBrickCoorsList() {
   const brickCoordsList: BrickCoords[] = [];
-  const maxX = displayWidth / imageScale;
+  const maxX = displaySize / imageScale;
 
   for (let y = 0; y < rows; y += 1) {
     let x = -Math.round(Math.random() * xStepNoise);

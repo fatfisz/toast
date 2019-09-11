@@ -1,4 +1,4 @@
-import { displayWidth } from './consts';
+import { displaySize } from './consts';
 
 export default class Point {
   x: number;
@@ -37,12 +37,12 @@ export default class Point {
   }
 
   wrap() {
-    while (this.x < -displayWidth / 2) {
-      this.x += displayWidth;
+    while (this.x < -displaySize / 2) {
+      this.x += displaySize;
     }
 
-    while (this.x > displayWidth / 2) {
-      this.x -= displayWidth;
+    while (this.x > displaySize / 2) {
+      this.x -= displaySize;
     }
 
     return this;

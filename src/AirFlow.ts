@@ -1,4 +1,4 @@
-import { displayHeight, displayWidth } from './consts';
+import { displaySize } from './consts';
 import Display from './Display';
 import Point from './Point';
 import { getColor } from './sprites';
@@ -7,8 +7,8 @@ const width = 1;
 const height = 40;
 const offset = new Point(width / 2, height / 2);
 const verticalDensity = height * 0.75;
-const fittingShapeCount = Math.ceil(displayHeight / verticalDensity);
-const rangeWidth = displayWidth * 0.95;
+const fittingShapeCount = Math.ceil(displaySize / verticalDensity);
+const rangeWidth = displaySize * 0.95;
 
 export default class AirFlow {
   pointCache: Map<number, Point>;
@@ -31,7 +31,7 @@ export default class AirFlow {
   }
 
   private getMinimumY(camera: Point) {
-    return Math.floor((camera.y - displayHeight / 2) / verticalDensity);
+    return Math.floor((camera.y - displaySize / 2) / verticalDensity);
   }
 
   private trimExcess(minY: number) {

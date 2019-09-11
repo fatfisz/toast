@@ -1,4 +1,4 @@
-import { displayHeight, displayWidth } from './consts';
+import { displaySize } from './consts';
 import Display from './Display';
 import Point, { PointWithTimestamp } from './Point';
 import Sparkles from './Sparkles';
@@ -88,8 +88,8 @@ export default class Mouse {
   private pushPoint(event: PointEvent, canvas: HTMLCanvasElement) {
     const { left, top, width, height } = canvas.getBoundingClientRect();
     this.lastPoint = new PointWithTimestamp(
-      ((event.clientX - left) * displayWidth) / width,
-      ((event.clientY - top) * displayHeight) / height,
+      ((event.clientX - left) * displaySize) / width,
+      ((event.clientY - top) * displaySize) / height,
       this.now,
     );
     this.points.add(this.lastPoint);
@@ -129,7 +129,7 @@ export default class Mouse {
     return toast.tryApplyForce(
       this.getCurrentVector(
         displayOffset.sub(
-          new Point(this.lastPoint.x < displayWidth / 2 ? displayWidth : -displayWidth, 0),
+          new Point(this.lastPoint.x < displaySize / 2 ? displaySize : -displaySize, 0),
         ),
       ),
     );

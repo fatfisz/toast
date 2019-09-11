@@ -1,4 +1,4 @@
-import { displayHeight, displayWidth } from './consts';
+import { displaySize } from './consts';
 import Display from './Display';
 import Point from './Point';
 import { getModel } from './sprites';
@@ -10,7 +10,7 @@ const wizard = [
   getModel('wizard', 3),
   getModel('wizard', 4),
 ];
-const mid = new Point(displayWidth / 2, displayHeight / 4);
+const mid = new Point(displaySize / 2, displaySize / 4);
 const startCount = 1;
 const restCount = wizard.length - 1 - startCount;
 const phaseDuration = 100;

@@ -1,10 +1,10 @@
-import { displayHeight, displayWidth, imageScale } from './consts';
+import { displaySize, imageScale } from './consts';
 import Display from './Display';
 import getCanvas from './getCanvas';
 import Point from './Point';
 import { getModel } from './sprites';
 
-const pillarsHeight = displayHeight * 1.5;
+const pillarsHeight = displaySize * 1.5;
 const pillars = [
   getModel('pillar'),
   getModel('pillar', 1),
@@ -16,10 +16,10 @@ const pillarZ = 0.02;
 const pillarHeight = pillarsHeight / 5 / imageScale;
 const middleOffset = 4;
 
-const [canvas, context] = getCanvas(displayWidth / imageScale, pillarsHeight / imageScale);
+const [canvas, context] = getCanvas(displaySize / imageScale, pillarsHeight / imageScale);
 
 export default function drawPillars(display: Display) {
-  display.image(canvas, new Point(0, (pillarsHeight + displayHeight / 3) / 2 / pillarZ), {
+  display.image(canvas, new Point(0, (pillarsHeight + displaySize / 3) / 2 / pillarZ), {
     z: pillarZ,
   });
 }
@@ -41,7 +41,7 @@ function getPillarPoints() {
   const yNoise = 12;
   const xOffset = 50;
   const minX = 0;
-  const maxX = displayWidth;
+  const maxX = displaySize;
   const xStep = 36;
   const xStepNoise = 24;
   const threshold = 0.75;

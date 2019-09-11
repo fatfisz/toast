@@ -1,10 +1,4 @@
-import {
-  bubbleScale,
-  displayHeight,
-  displayWidth,
-  finishFreeFallDepth,
-  imageScale,
-} from './consts';
+import { bubbleScale, displaySize, finishFreeFallDepth, imageScale } from './consts';
 import Display from './Display';
 import drawBubble from './drawBubble';
 import drawTextBubble from './drawTextBubble';
@@ -17,7 +11,7 @@ const wizards = [getModel('old wizard'), getModel('old wizard', 1), getModel('ol
 const wizardSize = wizards[0].width;
 const wizardPadding = 8 * bubbleScale;
 const halfWizardBubbleSize = wizardPadding + (wizardSize * imageScale) / 2;
-const wizardOffset = displayWidth / 10;
+const wizardOffset = displaySize / 10;
 
 export default class Scoring {
   canvas: HTMLCanvasElement;
@@ -26,7 +20,7 @@ export default class Scoring {
   showscoreTimestamp: number;
 
   constructor() {
-    [this.canvas, this.context] = getCanvas(displayWidth, displayHeight);
+    [this.canvas, this.context] = getCanvas(displaySize, displaySize);
     this.opacity = 0;
     this.showscoreTimestamp = Infinity;
   }
@@ -41,20 +35,20 @@ export default class Scoring {
 
   private prerender() {
     this.drawWizardWithBubble(
-      displayHeight * 0.25,
+      displaySize * 0.25,
       0,
       'i liked how it was almost close.\n8 points from me.',
     );
 
     this.drawWizardWithBubble(
-      displayHeight * 0.5,
+      displaySize * 0.5,
       1,
       'i liked how it was almost close.\n8 points from me.',
       true,
     );
 
     this.drawWizardWithBubble(
-      displayHeight * 0.75,
+      displaySize * 0.75,
       2,
       'i liked how it was almost close.\n8 points from me.',
     );
@@ -64,7 +58,7 @@ export default class Scoring {
     const midY = y - halfWizardBubbleSize;
     this.drawWizard(
       isRight
-        ? displayWidth - wizardOffset - halfWizardBubbleSize
+        ? displaySize - wizardOffset - halfWizardBubbleSize
         : wizardOffset + halfWizardBubbleSize,
       midY,
       wizardIndex,
@@ -74,9 +68,7 @@ export default class Scoring {
       text,
       isRight ? wizardOffset : wizardOffset + 2 * halfWizardBubbleSize,
       midY,
-      isRight
-        ? displayWidth - wizardOffset - 2 * halfWizardBubbleSize
-        : displayWidth - wizardOffset,
+      isRight ? displaySize - wizardOffset - 2 * halfWizardBubbleSize : displaySize - wizardOffset,
       isRight ? 'right' : 'left',
     );
   }
@@ -103,7 +95,7 @@ export default class Scoring {
   }
 
   draw(display: Display) {
-    display.image(this.canvas, new Point(displayWidth / 2, displayHeight / 2), {
+    display.image(this.canvas, new Point(displaySize / 2, displaySize / 2), {
       absolute: true,
       globalAlpha: this.opacity,
       imageScale: 1,

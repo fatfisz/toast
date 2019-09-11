@@ -1,11 +1,4 @@
-import {
-  displayHeight,
-  displayWidth,
-  finishDepth,
-  finishFreeFallDepth,
-  imageScale,
-  plateDepth,
-} from './consts';
+import { displaySize, finishDepth, finishFreeFallDepth, imageScale, plateDepth } from './consts';
 import Point from './Point';
 import Toast from './Toast';
 
@@ -22,9 +15,9 @@ interface TransformationOptions {
 
 type DrawOptions = CanvasRenderingContext2D & TransformationOptions;
 
-const mid = new Point(displayWidth / 2, displayHeight / 2);
-const cameraOffset = displayHeight / 15;
-const cameraEnd = plateDepth - displayHeight / 2 + 20 * imageScale;
+const mid = new Point(displaySize / 2, displaySize / 2);
+const cameraOffset = displaySize / 15;
+const cameraEnd = plateDepth - displaySize / 2 + 20 * imageScale;
 
 const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions = {
   absolute: false,
@@ -47,8 +40,8 @@ export default class Display {
   constructor() {
     this.camera = new Point(0, cameraOffset);
     this.canvas = canvas;
-    this.canvas.width = displayWidth;
-    this.canvas.height = displayHeight;
+    this.canvas.width = displaySize;
+    this.canvas.height = displaySize;
     this.context = canvas.getContext('2d') as CanvasRenderingContext2D;
     this.context.imageSmoothingEnabled = false;
     this.dy = 0;
@@ -62,7 +55,7 @@ export default class Display {
     );
     const nextY = Math.max(
       Math.min(cameraEnd * alpha + (toastY + cameraOffset) * (1 - alpha), toastY + cameraOffset),
-      toastY * 0.8 + displayHeight / 4,
+      toastY * 0.8 + displaySize / 4,
     );
     this.dy = nextY - this.camera.y;
     this.camera.y = nextY;
@@ -117,12 +110,12 @@ export default class Display {
     const offsetTop = snapToTop ? 0 : snapToBottom ? -height : -height / 2;
     this.context.drawImage(image, x + offsetLeft, y + offsetTop, width, height);
 
-    if (x < displayWidth / 2) {
-      this.setRotation(r, x + displayWidth, y);
-      this.context.drawImage(image, x + offsetLeft + displayWidth, y + offsetTop, width, height);
+    if (x < displaySize / 2) {
+      this.setRotation(r, x + displaySize, y);
+      this.context.drawImage(image, x + offsetLeft + displaySize, y + offsetTop, width, height);
     } else {
-      this.setRotation(r, x - displayWidth, y);
-      this.context.drawImage(image, x + offsetLeft - displayWidth, y + offsetTop, width, height);
+      this.setRotation(r, x - displaySize, y);
+      this.context.drawImage(image, x + offsetLeft - displaySize, y + offsetTop, width, height);
     }
     this.setRotation(0);
   }
@@ -152,6 +145,6 @@ export default class Display {
   }
 
   clear() {
-    this.context.clearRect(0, 0, displayWidth, displayHeight);
+    this.context.clearRect(0, 0, displaySize, displaySize);
   }
 }

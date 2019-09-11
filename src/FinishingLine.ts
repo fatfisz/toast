@@ -1,4 +1,4 @@
-import { displayWidth, imageScale, plateDepth, plateWidth, toastWidth } from './consts';
+import { displaySize, imageScale, plateDepth, plateWidth, toastWidth } from './consts';
 import Display from './Display';
 import drawBricks from './drawBricks';
 import Point from './Point';
@@ -8,13 +8,13 @@ import { getColor, getModel } from './sprites';
 const glowPeriod = 1500;
 const brickHeight = getModel('brick').height * imageScale;
 
-const firstStop = -displayWidth / 2;
+const firstStop = -displaySize / 2;
 const stops: [number, string][] = [
   [-(plateWidth + toastWidth) / 2, getColor(11)],
   [-plateWidth / 2, getColor(17)],
   [plateWidth / 2, getColor(6)],
   [(plateWidth + toastWidth) / 2, getColor(17)],
-  [displayWidth / 2, getColor(11)],
+  [displaySize / 2, getColor(11)],
 ];
 
 export default class FinishingLine {
