@@ -11,6 +11,7 @@ import Toast from './Toast';
 
 interface TransformationOptions {
   absolute: boolean;
+  imageScale: number;
   r: number;
   snapToBottom?: boolean;
   snapToLeft?: boolean;
@@ -28,6 +29,7 @@ const cameraEnd = plateDepth - displayHeight / 2 + 20 * imageScale;
 const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions = {
   absolute: false,
   globalAlpha: 1,
+  imageScale,
   lineJoin: 'round',
   lineWidth: 3,
   r: 0,
@@ -90,7 +92,17 @@ export default class Display {
   }
 
   image(image: HTMLCanvasElement, mid: Point, options?: Partial<DrawOptions>) {
-    const { absolute, r, snapToBottom, snapToLeft, snapToRight, snapToTop, z, ...rest } = {
+    const {
+      absolute,
+      imageScale,
+      r,
+      snapToBottom,
+      snapToLeft,
+      snapToRight,
+      snapToTop,
+      z,
+      ...rest
+    } = {
       ...defaultOptions,
       ...options,
     };

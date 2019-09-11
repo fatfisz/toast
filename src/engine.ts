@@ -3,13 +3,15 @@ import Display from './Display';
 import drawBackground from './drawBackground';
 import FinishingLine from './FinishingLine';
 import Mouse from './Mouse';
+import Scoring from './Scoring';
 import Toast from './Toast';
+import Wizard from './Wizard';
 
 // Prevent things going stupid when the tab is switched
 const maxFrameDuration = 20;
 
 interface DrawableWithToast {
-  draw(display: Display, toast: Toast): void;
+  draw(display: Display): void;
 }
 
 interface Options {
@@ -20,12 +22,16 @@ interface Options {
 export function startGameLoop({ display, mouse }: Options) {
   const toast = new Toast();
   const finishingLine = new FinishingLine();
+  const wizard = new Wizard();
+  const scoring = new Scoring();
   const drawables: DrawableWithToast[] = [
+    wizard,
     new AirFlow(),
     new AirFlow(2),
     new AirFlow(3),
     toast,
     finishingLine,
+    scoring,
     mouse,
   ];
 
@@ -48,12 +54,14 @@ export function startGameLoop({ display, mouse }: Options) {
 
     toast.tick(dt);
     finishingLine.tick(now);
+    scoring.tick(now, toast);
     display.trackToast(toast);
     mouse.tick(now, dt, display.getOffset(), toast);
+    wizard.tick(now, mouse.pressed);
 
     drawBackground(display);
     for (const drawable of drawables) {
-      drawable.draw(display, toast);
+      drawable.draw(display);
     }
   }
 

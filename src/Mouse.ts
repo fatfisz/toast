@@ -3,7 +3,6 @@ import Display from './Display';
 import Point, { PointWithTimestamp } from './Point';
 import Sparkles from './Sparkles';
 import Toast from './Toast';
-import Wizard from './Wizard';
 
 const mouseMemoryThreshold = 120;
 
@@ -18,7 +17,6 @@ export default class Mouse {
   points: Set<PointWithTimestamp>;
   pressed: boolean;
   sparkles: Sparkles;
-  wizard: Wizard;
 
   constructor() {
     this.lastPoint = null;
@@ -26,7 +24,6 @@ export default class Mouse {
     this.points = new Set();
     this.pressed = false;
     this.sparkles = new Sparkles();
-    this.wizard = new Wizard();
   }
 
   init(display: Display) {
@@ -101,8 +98,6 @@ export default class Mouse {
 
   tick(now: number, dt: number, displayOffset: Point, toast: Toast) {
     this.sparkles.tick(now, dt);
-    this.wizard.tick(now, this.pressed);
-
     this.now = now;
 
     if (!this.pressed) {
@@ -174,6 +169,5 @@ export default class Mouse {
 
   draw(display: Display) {
     this.sparkles.draw(display);
-    this.wizard.draw(display);
   }
 }

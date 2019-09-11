@@ -1,36 +1,43 @@
-import { getTextImage, letterHeight } from './text';
+import { bubbleScale } from './consts';
+import drawBubble from './drawBubble';
 import { getColor } from './sprites';
+import { getTextImage, letterHeight } from './text';
 
-const bubbleScale = 3;
-const cornerLength = 2;
 const paddingV = 5;
 const paddingH = 7;
 const lineSpacing = 4;
 const arrowSize = 6;
-const arrowOffset = (1 + paddingH + arrowSize / 2) * bubbleScale;
+const arrowOffset = Math.round((paddingV + arrowSize / 2) * bubbleScale);
 
 export default function drawTextBubble(
   context: CanvasRenderingContext2D,
   text: string,
   x: number,
   y: number,
-  width: number,
-  arrow?: 'left' | 'center' | 'right',
+  x2: number,
+  arrow?: 'left' | 'right',
 ) {
   const textImages = text.split('\n').map(line => getTextImage(line, getColor(0)));
   const height =
     2 * (1 + paddingV) * bubbleScale +
     ((letterHeight + lineSpacing) * textImages.length - lineSpacing) * bubbleScale;
 
-  drawBubble(context, x, y, width, height);
+  drawBubble(
+    context,
+    x + (arrow === 'left' ? (arrowSize / 2) * bubbleScale : 0),
+    y,
+    x2 - x - (arrow ? (arrowSize / 2) * bubbleScale : 0),
+    height,
+    getColor(6),
+    getColor(0),
+  );
   if (arrow) {
-    const arrowX =
-      arrow === 'left'
-        ? x + arrowOffset
-        : arrow === 'center'
-        ? x + width / 2
-        : x + width - arrowOffset;
-    drawArrow(context, arrowX, y);
+    drawArrow(
+      context,
+      arrow === 'left' ? x : x2 - bubbleScale,
+      y + arrowOffset,
+      arrow === 'left' ? 1 : -1,
+    );
   }
 
   for (let index = 0; index < textImages.length; index += 1) {
@@ -51,52 +58,24 @@ export default function drawTextBubble(
   }
 }
 
-function drawBubble(
-  context: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-) {
+function drawArrow(context: CanvasRenderingContext2D, x: number, y: number, modX: number) {
   context.fillStyle = getColor(0);
-  for (let index = 0; index <= cornerLength; index += 1) {
+  for (let index = 0; index < arrowSize / 2; index += 1) {
     context.fillRect(
-      x + (cornerLength - index) * bubbleScale,
-      y + index * bubbleScale,
-      width - 2 * (cornerLength - index) * bubbleScale,
-      height - 2 * index * bubbleScale,
-    );
-  }
-
-  context.fillStyle = getColor(6);
-  for (let index = 0; index <= cornerLength - 1; index += 1) {
-    context.fillRect(
-      x + (cornerLength - index) * bubbleScale,
-      y + (index + 1) * bubbleScale,
-      width - 2 * (cornerLength - index) * bubbleScale,
-      height - 2 * (index + 1) * bubbleScale,
-    );
-  }
-}
-
-function drawArrow(context: CanvasRenderingContext2D, midX: number, y: number) {
-  context.fillStyle = getColor(0);
-  for (let index = 0; index <= arrowSize / 2; index += 1) {
-    context.fillRect(
-      midX + (index - arrowSize / 2) * bubbleScale,
-      y - (index + 1) * bubbleScale,
-      (arrowSize - index * 2) * bubbleScale,
-      bubbleScale,
-    );
-  }
-
-  context.fillStyle = getColor(6);
-  for (let index = 0; index <= arrowSize / 2; index += 1) {
-    context.fillRect(
-      midX + (index - arrowSize / 2) * bubbleScale,
+      x + modX * index * bubbleScale,
       y - index * bubbleScale,
-      (arrowSize - index * 2) * bubbleScale,
       bubbleScale,
+      (index + 1) * 2 * bubbleScale,
+    );
+  }
+
+  context.fillStyle = getColor(6);
+  for (let index = 0; index < arrowSize / 2; index += 1) {
+    context.fillRect(
+      x + modX * (index + 1) * bubbleScale,
+      y - index * bubbleScale,
+      bubbleScale,
+      (index + 1) * 2 * bubbleScale,
     );
   }
 }
