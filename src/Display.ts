@@ -77,7 +77,6 @@ export default class Display {
     const { x: left, y: top } = this.getTransformedPoint(absolute, topLeft, z);
     const { x: right, y: bottom } = this.getTransformedPoint(absolute, bottomRight, z);
 
-    this.setRotation(0);
     this.context.beginPath();
     this.context.rect(left, top, right - left, bottom - top);
     this.context.closePath();
@@ -113,6 +112,7 @@ export default class Display {
       this.setRotation(r, x - displayWidth, y);
       this.context.drawImage(image, x + offsetLeft - displayWidth, y + offsetTop, width, height);
     }
+    this.setRotation(0);
   }
 
   private getTransformedPoint(absolute: boolean, point: Point, z: number) {
