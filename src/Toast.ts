@@ -35,7 +35,7 @@ export default class Toast {
   mid: Point;
   r: number;
 
-  constructor(x = 0, y = 0) {
+  constructor(x = 0, y = -2000) {
     this.collisionPoint = null;
     this.dr = Math.sign(Math.random() - 0.5) * (Math.random() * 0.01 + 0.005);
     this.dx = Math.sign(Math.random() - 0.5) * (Math.random() * 0.05 + 0.025);

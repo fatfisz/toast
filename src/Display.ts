@@ -58,9 +58,9 @@ export default class Display {
       Math.min((toastY - finishDepth) / (finishFreeFallDepth - finishDepth), 1),
       0,
     );
-    const nextY = Math.min(
-      cameraEnd * alpha + (toastY + cameraOffset) * (1 - alpha),
-      toastY + cameraOffset,
+    const nextY = Math.max(
+      Math.min(cameraEnd * alpha + (toastY + cameraOffset) * (1 - alpha), toastY + cameraOffset),
+      toastY * 0.8 + displayHeight / 4,
     );
     this.dy = nextY - this.camera.y;
     this.camera.y = nextY;
