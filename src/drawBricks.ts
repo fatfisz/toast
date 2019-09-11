@@ -1,5 +1,6 @@
 import { displayWidth, imageScale, plateDepth } from './consts';
 import Display from './Display';
+import getCanvas from './getCanvas';
 import Point from './Point';
 import { getModel } from './sprites';
 
@@ -10,7 +11,7 @@ const middleOffset = 2;
 const { height } = brick;
 const rows = 15;
 
-const canvas = document.createElement('canvas');
+const [canvas, context] = getCanvas(displayWidth / imageScale, rows * height);
 
 export default function drawBricks(display: Display) {
   display.image(canvas, new Point(0, plateDepth), { snapToTop: true });
@@ -18,13 +19,9 @@ export default function drawBricks(display: Display) {
 
 function init() {
   const brickCoordsList: BrickCoords[] = getBrickCoorsList();
-  canvas.width = displayWidth / imageScale;
-  canvas.height = rows * height;
-  const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-  context.imageSmoothingEnabled = false;
 
   for (const brickCoords of brickCoordsList) {
-    drawBrick(context, brickCoords);
+    drawBrick(brickCoords);
   }
 }
 
@@ -48,7 +45,7 @@ function getBrickCoorsList() {
   return brickCoordsList;
 }
 
-function drawBrick(context: CanvasRenderingContext2D, [x, y, width]: BrickCoords) {
+function drawBrick([x, y, width]: BrickCoords) {
   context.drawImage(brick, 0, 0, middleOffset, height, x, y, middleOffset, height);
   context.drawImage(
     brick,

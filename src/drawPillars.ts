@@ -1,5 +1,6 @@
 import { displayHeight, displayWidth, imageScale } from './consts';
 import Display from './Display';
+import getCanvas from './getCanvas';
 import Point from './Point';
 import { getModel } from './sprites';
 
@@ -15,7 +16,7 @@ const pillarZ = 0.02;
 const pillarHeight = pillarsHeight / 5 / imageScale;
 const middleOffset = 4;
 
-const canvas = document.createElement('canvas');
+const [canvas, context] = getCanvas(displayWidth / imageScale, pillarsHeight / imageScale);
 
 export default function drawPillars(display: Display) {
   display.image(canvas, new Point(0, (pillarsHeight + displayHeight / 3) / 2 / pillarZ), {
@@ -26,18 +27,8 @@ export default function drawPillars(display: Display) {
 function init() {
   const pillarPoints = getPillarPoints();
 
-  canvas.width = displayWidth / imageScale;
-  canvas.height = pillarsHeight / imageScale;
-  const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-  context.imageSmoothingEnabled = false;
-
   for (const [point, image] of pillarPoints) {
-    drawPillar(
-      context,
-      image,
-      (point.x - image.width) / imageScale,
-      (point.y - image.height) / imageScale,
-    );
+    drawPillar(image, (point.x - image.width) / imageScale, (point.y - image.height) / imageScale);
   }
 }
 
@@ -75,12 +66,7 @@ function getPillarPoints() {
   return pillarPoints;
 }
 
-function drawPillar(
-  context: CanvasRenderingContext2D,
-  pillarImage: HTMLCanvasElement,
-  x: number,
-  y: number,
-) {
+function drawPillar(pillarImage: HTMLCanvasElement, x: number, y: number) {
   const { width, height } = pillarImage;
   context.drawImage(
     pillarImage,

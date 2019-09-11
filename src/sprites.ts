@@ -1,3 +1,4 @@
+import getCanvas from './getCanvas';
 import models from './model.json';
 
 type Size = [number, number];
@@ -57,13 +58,7 @@ function putColorFromPalette(
 
 function getCanvasForLayer(part: Part, bounds: Bounds2d, layer: number, palette: number[]) {
   const [width, height] = part.size;
-  const boundsWidth = bounds[1] - bounds[0] + 1;
-  const boundsHeight = bounds[3] - bounds[2] + 1;
-
-  const canvas = document.createElement('canvas');
-  canvas.width = boundsWidth;
-  canvas.height = boundsHeight;
-  const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+  const [canvas, context] = getCanvas(bounds[1] - bounds[0] + 1, bounds[3] - bounds[2] + 1);
   const imageData = context.createImageData(width, height);
 
   for (let x = bounds[0]; x <= bounds[1]; x += 1) {

@@ -8,6 +8,7 @@ import {
 import Display from './Display';
 import drawBubble from './drawBubble';
 import drawTextBubble from './drawTextBubble';
+import getCanvas from './getCanvas';
 import Point from './Point';
 import { getColor, getModel } from './sprites';
 import Toast from './Toast';
@@ -25,11 +26,7 @@ export default class Scoring {
   showscoreTimestamp: number;
 
   constructor() {
-    this.canvas = document.createElement('canvas');
-    this.canvas.width = displayWidth;
-    this.canvas.height = displayHeight;
-    this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
-    this.context.imageSmoothingEnabled = false;
+    [this.canvas, this.context] = getCanvas(displayWidth, displayHeight);
     this.opacity = 0;
     this.showscoreTimestamp = Infinity;
   }

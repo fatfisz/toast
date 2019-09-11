@@ -1,3 +1,5 @@
+import getCanvas from './getCanvas';
+
 type Letters = { [char: string]: string };
 
 export const letterHeight = 6;
@@ -60,12 +62,7 @@ export function getTextImage(text: string, color: string): HTMLCanvasElement {
 
   if (!textImageCache.has(color)) {
     const width = getWidth(text);
-
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = letterHeight;
-
-    const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+    const [canvas, context] = getCanvas(width, letterHeight);
     let offset = 0;
 
     context.fillStyle = color;
