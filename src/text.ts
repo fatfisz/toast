@@ -44,11 +44,8 @@ const letters: Letters = {
   '.': '    . ',
   ',': '    ..',
   '!': '... . ',
-  ':': ' . .  ',
   '-': '    ..      ',
-  '/': '  .  . . .  .     ',
   '?': '...  . .     .    ',
-  '%': '. .  . . .  . .   ',
 };
 
 const imageCache = new Map<string, Map<string, HTMLCanvasElement>>();
