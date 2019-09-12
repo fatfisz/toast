@@ -10,21 +10,21 @@ import Wizard from './Wizard';
 // Prevent things going stupid when the tab is switched
 const maxFrameDuration = 20;
 
-interface DrawableWithToast {
+interface Drawable {
   draw(display: Display): void;
 }
 
-interface Options {
+interface GameLoopOptions {
   display: Display;
   mouse: Mouse;
 }
 
-export function startGameLoop({ display, mouse }: Options) {
+export default function startGameLoop({ display, mouse }: GameLoopOptions) {
   const toast = new Toast();
   const finishingLine = new FinishingLine();
   const wizard = new Wizard();
   const scoring = new Scoring();
-  const drawables: DrawableWithToast[] = [
+  const drawables: Drawable[] = [
     wizard,
     new AirFlow(),
     new AirFlow(2),

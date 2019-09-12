@@ -1,7 +1,7 @@
 import Display from './Display';
-import { startGameLoop } from './engine';
 import Mouse from './Mouse';
 import { getColor } from './sprites';
+import startGameLoop from './startGameLoop';
 
 document.documentElement.style.background = getColor(1);
 const display = new Display();
