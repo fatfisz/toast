@@ -39,18 +39,18 @@ export default class Toast {
   dx: number;
   dy: number;
   hits: number;
-  phase: 'falling' | 'hitting' | 'resting';
   mid: Point;
+  phase: 'falling' | 'hitting' | 'resting';
   r: number;
 
-  constructor(x = 0, y = -2000) {
+  constructor(x: number, y: number, difficulty: number) {
     this.collisionPoint = null;
-    this.dr = Math.sign(Math.random() - 0.5) * (Math.random() * 0.01 + 0.005);
-    this.dx = Math.sign(Math.random() - 0.5) * (Math.random() * 0.05 + 0.025);
+    this.dr = Math.sign(Math.random() - 0.5) * (Math.random() * 0.01 + 0.005 + difficulty * 0.0007);
+    this.dx = Math.sign(Math.random() - 0.5) * (Math.random() * 0.05 + 0.02 + difficulty * 0.005);
     this.dy = gravity;
     this.hits = 0;
-    this.phase = 'falling';
     this.mid = new Point(x, y);
+    this.phase = 'falling';
     this.r = 0;
 
     withGui(gui => {

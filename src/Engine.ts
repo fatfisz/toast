@@ -1,6 +1,13 @@
 import AirFlow from './AirFlow';
 import { getColor, getColorTuple } from './colors';
-import { displaySize, finishDepth, finishFreeFallDepth, imageScale, plateDepth } from './consts';
+import {
+  displaySize,
+  finishDepth,
+  finishFreeFallDepth,
+  imageScale,
+  plateDepth,
+  startDepth,
+} from './consts';
 import Display from './Display';
 import drawBackground from './drawBackground';
 import drawText from './drawText';
@@ -61,10 +68,11 @@ export default class Engine {
     this.finishTimestamp = Infinity;
     this.showRestartText = false;
 
-    this.toast = new Toast();
     this.finishingLine = new FinishingLine();
-    this.wizard = new Wizard();
     this.scoring = new Scoring();
+    this.toast = new Toast(0, startDepth, this.scoring.highscore);
+    this.wizard = new Wizard();
+
     this.drawables = [
       this.wizard,
       new AirFlow(),
