@@ -1,4 +1,5 @@
 import { finishDepth, finishFreeFallDepth, plateDepth, toastHeight, toastWidth } from './consts';
+import { GUI } from 'dat.gui';
 import Display from './Display';
 import { updateGui, withGui } from './gui';
 import Point from './Point';
@@ -26,6 +27,12 @@ function isPointOutside(point: Point) {
   return point.y > plateDepth;
 }
 
+declare global {
+  interface Window {
+    toastGuiFolder: GUI;
+  }
+}
+
 export default class Toast {
   collisionPoint: Point | null;
   dr: number;
@@ -45,14 +52,17 @@ export default class Toast {
     this.r = 0;
 
     withGui(gui => {
-      const folder = gui.addFolder('Toast');
-      folder.open();
-      folder.add(this.mid, 'x');
-      folder.add(this.mid, 'y');
-      folder.add(this, 'r').step(0.001);
-      folder.add(this, 'dx').step(0.001);
-      folder.add(this, 'dy').step(0.001);
-      folder.add(this, 'dr').step(0.001);
+      if (window.toastGuiFolder) {
+        gui.removeFolder(window.toastGuiFolder);
+      }
+      window.toastGuiFolder = gui.addFolder('Toast');
+      window.toastGuiFolder.open();
+      window.toastGuiFolder.add(this.mid, 'x');
+      window.toastGuiFolder.add(this.mid, 'y');
+      window.toastGuiFolder.add(this, 'r').step(0.001);
+      window.toastGuiFolder.add(this, 'dx').step(0.001);
+      window.toastGuiFolder.add(this, 'dy').step(0.001);
+      window.toastGuiFolder.add(this, 'dr').step(0.001);
     });
   }
 

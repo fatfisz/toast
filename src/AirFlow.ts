@@ -20,7 +20,7 @@ export default class AirFlow {
   }
 
   draw(display: Display) {
-    const minY = this.getMinimumY(display.camera);
+    const minY = this.getMinimumY(display.cameraPosition);
     this.trimExcess(minY);
     this.ensureEnough(minY);
 

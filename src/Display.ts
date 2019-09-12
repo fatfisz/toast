@@ -1,7 +1,6 @@
-import { displaySize, finishDepth, finishFreeFallDepth, imageScale, plateDepth } from './consts';
+import { displaySize, imageScale } from './consts';
 import getCanvas from './getCanvas';
 import Point from './Point';
-import Toast from './Toast';
 
 interface TransformationOptions {
   absolute: boolean;
@@ -17,8 +16,6 @@ interface TransformationOptions {
 type DrawOptions = CanvasRenderingContext2D & TransformationOptions;
 
 const mid = new Point(displaySize / 2, displaySize / 2);
-const cameraOffset = displaySize / 15;
-const cameraEnd = plateDepth - displaySize / 2 + 20 * imageScale;
 
 const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions = {
   absolute: false,
@@ -31,34 +28,35 @@ const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions 
 };
 
 export default class Display {
-  camera: Point;
+  cameraPosition!: Point;
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
-  dy: number;
+  dy!: number;
+  trackingDy!: boolean;
 
   constructor() {
-    this.camera = new Point(0, cameraOffset);
     [this.canvas, this.context] = getCanvas(displaySize, displaySize);
     document.body.appendChild(this.canvas);
-    this.dy = 0;
+    this.resetCameraPosition();
   }
 
-  trackToast(toast: Toast) {
-    const toastY = toast.mid.y;
-    const alpha = Math.max(
-      Math.min((toastY - finishDepth) / (finishFreeFallDepth - finishDepth), 1),
-      0,
-    );
-    const nextY = Math.max(
-      Math.min(cameraEnd * alpha + (toastY + cameraOffset) * (1 - alpha), toastY + cameraOffset),
-      toastY * 0.8 + displaySize / 4,
-    );
-    this.dy = nextY - this.camera.y;
-    this.camera.y = nextY;
+  setCameraPosition(newCameraPosition: Point) {
+    if (this.trackingDy) {
+      this.dy = newCameraPosition.y - this.cameraPosition.y;
+    } else {
+      this.trackingDy = true;
+    }
+    this.cameraPosition = newCameraPosition;
+  }
+
+  resetCameraPosition() {
+    this.cameraPosition = new Point(0, 0);
+    this.dy = 0;
+    this.trackingDy = false;
   }
 
   getOffset() {
-    return mid.sub(this.camera);
+    return mid.sub(this.cameraPosition);
   }
 
   rect(topLeft: Point, bottomRight: Point, options?: Partial<DrawOptions>) {
@@ -121,7 +119,7 @@ export default class Display {
       return point.round();
     }
     return point
-      .sub(this.camera)
+      .sub(this.cameraPosition)
       .scale(z)
       .add(mid)
       .round();

@@ -1,40 +1,12 @@
-import AirFlow from './AirFlow';
 import Display from './Display';
-import drawBackground from './drawBackground';
-import FinishingLine from './FinishingLine';
+import Engine from './Engine';
 import Mouse from './Mouse';
-import Scoring from './Scoring';
-import Toast from './Toast';
-import Wizard from './Wizard';
 
 // Prevent things going stupid when the tab is switched
 const maxFrameDuration = 20;
 
-interface Drawable {
-  draw(display: Display): void;
-}
-
-interface GameLoopOptions {
-  display: Display;
-  mouse: Mouse;
-}
-
-export default function startGameLoop({ display, mouse }: GameLoopOptions) {
-  const toast = new Toast();
-  const finishingLine = new FinishingLine();
-  const wizard = new Wizard();
-  const scoring = new Scoring();
-  const drawables: Drawable[] = [
-    wizard,
-    new AirFlow(),
-    new AirFlow(2),
-    new AirFlow(3),
-    toast,
-    finishingLine,
-    scoring,
-    mouse,
-  ];
-
+export default function startGameLoop(display: Display, mouse: Mouse) {
+  const engine = new Engine(display, mouse);
   let lastNow = 0;
   let skipFrame = true;
 
@@ -51,18 +23,8 @@ export default function startGameLoop({ display, mouse }: GameLoopOptions) {
     }
 
     display.clear();
-
-    toast.tick(dt);
-    finishingLine.tick(now);
-    scoring.tick(now, toast);
-    display.trackToast(toast);
-    mouse.tick(now, dt, display.getOffset(), toast);
-    wizard.tick(now, mouse.pressed);
-
-    drawBackground(display);
-    for (const drawable of drawables) {
-      drawable.draw(display);
-    }
+    engine.tick(now, dt);
+    engine.draw();
   }
 
   requestAnimationFrame(draw);

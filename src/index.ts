@@ -8,4 +8,4 @@ const display = new Display();
 const mouse = new Mouse();
 mouse.init(display);
 
-startGameLoop({ display, mouse });
+startGameLoop(display, mouse);
