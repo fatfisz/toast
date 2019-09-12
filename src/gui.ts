@@ -6,6 +6,7 @@ export function withGui(callback: (gui: GUI) => void) {
   if (process.env.NODE_ENV !== 'production') {
     if (gui === null) {
       gui = new (require('dat.gui')).GUI() as GUI;
+      gui.close();
     }
     callback(gui);
   }
