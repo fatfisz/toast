@@ -172,7 +172,7 @@ export default class Engine {
     } else if (trigger) {
       this.actionTextTimestamp = this.now + actionTextWaitingTime;
       setTimeout(() => {
-        this.setMouseDownCallback(callback);
+        this.setClickCallback(callback);
       }, actionTextWaitingTime);
     }
   }
@@ -332,12 +332,15 @@ export default class Engine {
     }
   }
 
-  private setMouseDownCallback(callback: () => void) {
-    function mouseDownHandler() {
-      window.removeEventListener('mousedown', mouseDownHandler);
+  private setClickCallback(callback: () => void) {
+    const clickHandler = (event: Event) => {
+      event.preventDefault();
+      this.display.canvas.removeEventListener('mousedown', clickHandler);
+      this.display.canvas.removeEventListener('touchstart', clickHandler);
       callback();
-    }
+    };
 
-    window.addEventListener('mousedown', mouseDownHandler);
+    this.display.canvas.addEventListener('mousedown', clickHandler);
+    this.display.canvas.addEventListener('touchstart', clickHandler);
   }
 }
