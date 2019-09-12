@@ -1,5 +1,5 @@
 import { getColor } from './colors';
-import { bubbleScale, displaySize, imageScale } from './consts';
+import { bubbleScale, displaySize, imageScale, toastWidth } from './consts';
 import Display from './Display';
 import drawBubble from './drawBubble';
 import drawTextBubble from './drawTextBubble';
@@ -60,21 +60,51 @@ export default class Scoring {
   }
 
   private scoreForm(toast: Toast) {
-    // eslint-disable-next-line
-    toast;
-    return 10;
+    if (isToastUpsideDown(toast)) {
+      return 0;
+    }
+    const normalizedScore = toastNormalizedScore(toast);
+    if (isToastOnASide(toast)) {
+      return normalizedScore < -1 ? 1 : normalizedScore < 0 ? 2 : 3;
+    }
+    const lowScoreThreshold = -1;
+    if (normalizedScore < lowScoreThreshold) {
+      return 1;
+    }
+    const rescaledScore = (normalizedScore - lowScoreThreshold) / (1 - lowScoreThreshold);
+    const hitPoints = Math.min(Math.floor((20 - toast.hits) / 5), 0);
+    const distancePoints = Math.max(Math.ceil(rescaledScore * 6.3), 1);
+    return Math.max(hitPoints + distancePoints, 1) + 3;
   }
 
   private scoreLenient(toast: Toast) {
-    // eslint-disable-next-line
-    toast;
-    return 10;
+    if (isToastUpsideDown(toast)) {
+      return 0;
+    }
+    const normalizedScore = toastNormalizedScore(toast);
+    if (isToastOnASide(toast)) {
+      return normalizedScore < -1 ? 3 : 6;
+    }
+    const lowScoreThreshold = -0.2;
+    if (normalizedScore < lowScoreThreshold) {
+      return Math.random() < 0.2 ? 5 : 1;
+    }
+    const rescaledScore = (normalizedScore - lowScoreThreshold) / (1 - lowScoreThreshold);
+    return Math.max(Math.ceil(rescaledScore * 3.5), 1) + 6;
   }
 
   private scorePrecision(toast: Toast) {
-    // eslint-disable-next-line
-    toast;
-    return 10;
+    if (isToastUpsideDown(toast)) {
+      return 0;
+    }
+    const normalizedScore = toastNormalizedScore(toast);
+    if (normalizedScore < 0) {
+      return 1;
+    }
+    if (isToastOnASide(toast)) {
+      return 2;
+    }
+    return Math.max(Math.ceil(normalizedScore * 7.2), 1) + 2;
   }
 
   private prerender() {
@@ -85,8 +115,8 @@ export default class Scoring {
     }
 
     this.drawWizardWithBubble(displaySize * 0.25, 0, precisionText[this.scores.precision]);
-    this.drawWizardWithBubble(displaySize * 0.5, 1, lenientText[this.scores.precision], true);
-    this.drawWizardWithBubble(displaySize * 0.75, 2, formText[this.scores.precision]);
+    this.drawWizardWithBubble(displaySize * 0.5, 1, lenientText[this.scores.lenient], true);
+    this.drawWizardWithBubble(displaySize * 0.75, 2, formText[this.scores.form]);
   }
 
   private drawWizardWithBubble(y: number, wizardIndex: number, text: string, isRight?: boolean) {
@@ -134,4 +164,16 @@ export default class Scoring {
       imageScale: 1,
     });
   }
+}
+
+function isToastUpsideDown(toast: Toast) {
+  return Math.abs(toast.r - Math.PI) < 0.0001;
+}
+
+function isToastOnASide(toast: Toast) {
+  return Math.abs(toast.r - Math.PI * 0.5) < 0.0001 || Math.abs(toast.r - Math.PI * 1.5) < 0.0001;
+}
+
+function toastNormalizedScore(toast: Toast) {
+  return 1 - Math.abs(toast.mid.x) / (toastWidth / 2);
 }

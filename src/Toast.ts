@@ -38,6 +38,7 @@ export default class Toast {
   dr: number;
   dx: number;
   dy: number;
+  hits: number;
   phase: 'falling' | 'hitting' | 'resting';
   mid: Point;
   r: number;
@@ -47,6 +48,7 @@ export default class Toast {
     this.dr = Math.sign(Math.random() - 0.5) * (Math.random() * 0.01 + 0.005);
     this.dx = Math.sign(Math.random() - 0.5) * (Math.random() * 0.05 + 0.025);
     this.dy = gravity;
+    this.hits = 0;
     this.phase = 'falling';
     this.mid = new Point(x, y);
     this.r = 0;
@@ -218,6 +220,8 @@ export default class Toast {
     const force = intersectionPoint.sub(firstPoint).scale(forceScale);
     const adjustedIntersectionPoint = intersectionPoint.sub(this.mid);
     this.applyForce(adjustedIntersectionPoint, force);
+
+    this.hits += 1;
 
     return intersectionPoint;
   }
