@@ -26,12 +26,14 @@ const wizardOffset = displaySize / 10;
 export default class Scoring {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
+  highscore: number;
   opacity: number;
   scores: Scores;
   showScoreTimestamp: number;
 
   constructor() {
     [this.canvas, this.context] = getCanvas(displaySize, displaySize);
+    this.highscore = Number(localStorage.highscore) || 0;
     this.opacity = 0;
     this.scores = { form: 0, lenient: 0, precision: 0, total: 0, set: false };
     this.showScoreTimestamp = Infinity;
@@ -39,14 +41,21 @@ export default class Scoring {
 
   tick(now: number, toast: Toast) {
     if (!isFinite(this.showScoreTimestamp) && toast.phase === 'resting') {
-      this.showScoreTimestamp = now + 400;
-      this.score(toast);
-      this.prerender();
+      this.showScore(now, toast);
     }
     this.opacity = Math.min(Math.max((now - this.showScoreTimestamp) / 400, 0), 1);
   }
 
-  private score(toast: Toast) {
+  private showScore(now: number, toast: Toast) {
+    this.showScoreTimestamp = now + 400;
+    this.calculateScore(toast);
+    this.prerender();
+    if (this.highscore < this.scores.total) {
+      localStorage.highscore = this.scores.total;
+    }
+  }
+
+  private calculateScore(toast: Toast) {
     const form = this.scoreForm(toast);
     const lenient = this.scoreLenient(toast);
     const precision = this.scorePrecision(toast);
@@ -113,9 +122,10 @@ export default class Scoring {
     this.drawWizardWithBubble(displaySize * 0.44, 1, lenientText[this.scores.lenient], true);
     this.drawWizardWithBubble(displaySize * 0.66, 2, formText[this.scores.form]);
 
+    const scoreText = this.scores.total > this.highscore ? `new highscore` : 'total score';
     drawTextBubble(
       this.context,
-      `total score: ${this.scores.total}`,
+      `${scoreText}: ${this.scores.total}`,
       displaySize * 0.25,
       displaySize * 0.8,
       displaySize * (1 - 0.25),

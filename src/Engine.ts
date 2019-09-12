@@ -7,8 +7,8 @@ import drawText from './drawText';
 import FinishingLine from './FinishingLine';
 import { withGui } from './gui';
 import Mouse from './Mouse';
-import roundToSteps from './roundToSteps';
 import Point from './Point';
+import roundToSteps from './roundToSteps';
 import Scoring from './Scoring';
 import Toast from './Toast';
 import Wizard from './Wizard';
@@ -153,7 +153,7 @@ export default class Engine {
 
     drawText(
       this.display.context,
-      'highscore: 0',
+      `highscore: ${this.scoring.highscore}`,
       getColorTuple(6),
       infoPadding,
       infoPadding,

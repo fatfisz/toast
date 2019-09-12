@@ -6,8 +6,8 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
   globals: {
-    canvas: true,
     document: true,
+    localStorage: true,
     requestAnimationFrame: true,
   },
   rules: {
