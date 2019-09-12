@@ -10,10 +10,8 @@ const duration = 400;
 const hitDuration = duration * 2;
 const fullVisibilityThreshold = duration * 0.05;
 
-const sparkleImage = {
-  basic: getModel('sparkles', 0),
-  hit: getModel('sparkles', 1),
-};
+const sparklesBasic = getModel('sparkles');
+const sparklesHit = getModel('sparkles', 1);
 
 function getOpacity(duration: number, time: number) {
   return time < fullVisibilityThreshold
@@ -58,7 +56,7 @@ class Sparkle extends PointWithTimestamp {
   }
 
   draw(display: Display, now: number) {
-    const image = this.isHit ? sparkleImage.hit : sparkleImage.basic;
+    const image = this.isHit ? sparklesHit : sparklesBasic;
     const timeBasedOpacity =
       getOpacity(this.isHit ? hitDuration : duration, now - this.timestamp) ** 0.5;
     const hitOpacity = this.isHit ? 1 : 0.5;
