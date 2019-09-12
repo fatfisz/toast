@@ -4,8 +4,16 @@ import drawBubble from './drawBubble';
 import drawTextBubble from './drawTextBubble';
 import getCanvas from './getCanvas';
 import Point from './Point';
+import { formText, lenientText, precisionText } from './scoreTexts';
 import { getColor, getModel } from './sprites';
 import Toast from './Toast';
+
+interface Scores {
+  form: number;
+  lenient: number;
+  precision: number;
+  set: boolean;
+}
 
 const wizards = [getModel('old wizard'), getModel('old wizard', 1), getModel('old wizard', 2)];
 const wizardSize = wizards[0].width;
@@ -17,41 +25,67 @@ export default class Scoring {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
   opacity: number;
-  showscoreTimestamp: number;
+  scores: Scores;
+  showScoreTimestamp: number;
 
   constructor() {
     [this.canvas, this.context] = getCanvas(displaySize, displaySize);
     this.opacity = 0;
-    this.showscoreTimestamp = Infinity;
+    this.scores = {
+      form: 0,
+      lenient: 0,
+      precision: 0,
+      set: false,
+    };
+    this.showScoreTimestamp = Infinity;
   }
 
   tick(now: number, toast: Toast) {
-    if (!isFinite(this.showscoreTimestamp) && toast.phase === 'resting') {
-      this.showscoreTimestamp = now + 400;
+    if (!isFinite(this.showScoreTimestamp) && toast.phase === 'resting') {
+      this.showScoreTimestamp = now + 400;
+      this.score(toast);
       this.prerender();
     }
-    this.opacity = Math.min(Math.max((now - this.showscoreTimestamp) / 400, 0), 1);
+    this.opacity = Math.min(Math.max((now - this.showScoreTimestamp) / 400, 0), 1);
+  }
+
+  private score(toast: Toast) {
+    this.scores = {
+      form: this.scoreForm(toast),
+      lenient: this.scoreLenient(toast),
+      precision: this.scorePrecision(toast),
+      set: true,
+    };
+  }
+
+  private scoreForm(toast: Toast) {
+    // eslint-disable-next-line
+    toast;
+    return 10;
+  }
+
+  private scoreLenient(toast: Toast) {
+    // eslint-disable-next-line
+    toast;
+    return 10;
+  }
+
+  private scorePrecision(toast: Toast) {
+    // eslint-disable-next-line
+    toast;
+    return 10;
   }
 
   private prerender() {
-    this.drawWizardWithBubble(
-      displaySize * 0.25,
-      0,
-      'soon i will be saying something sarcastic.\ni like precision.',
-    );
+    if (process.env.NODE_ENV !== 'production') {
+      if (!this.scores.set) {
+        throw new Error('Scores should be set before prerendering');
+      }
+    }
 
-    this.drawWizardWithBubble(
-      displaySize * 0.5,
-      1,
-      "i'm not even sure why i'm here.\nthat toast looks delicious though.\nit will be enough if it just lands butter up.",
-      true,
-    );
-
-    this.drawWizardWithBubble(
-      displaySize * 0.75,
-      2,
-      "oh, young'uns these days! no appreciation for the form.\n\nwhat point is there to be precise if it looks plain awful in the end?",
-    );
+    this.drawWizardWithBubble(displaySize * 0.25, 0, precisionText[this.scores.precision]);
+    this.drawWizardWithBubble(displaySize * 0.5, 1, lenientText[this.scores.precision], true);
+    this.drawWizardWithBubble(displaySize * 0.75, 2, formText[this.scores.precision]);
   }
 
   private drawWizardWithBubble(y: number, wizardIndex: number, text: string, isRight?: boolean) {
