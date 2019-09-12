@@ -76,7 +76,12 @@ export default class Scoring {
       return 1;
     }
     const rescaledScore = (normalizedScore - lowScoreThreshold) / (1 - lowScoreThreshold);
-    const hitPoints = Math.min(Math.floor((20 - toast.hits) / 5), 0);
+    const perfectFormThreshold = 15;
+    const perfectFormStep = 5;
+    const hitPoints = Math.min(
+      Math.floor((perfectFormThreshold - toast.hits) / perfectFormStep),
+      0,
+    );
     const distancePoints = Math.max(Math.ceil(rescaledScore * 6.3), 1);
     return Math.max(hitPoints + distancePoints, 1) + 3;
   }

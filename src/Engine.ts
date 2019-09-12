@@ -92,7 +92,7 @@ export default class Engine {
         now >= this.finishTimestamp &&
         Math.floor((now - this.finishTimestamp) / restartPeriod) % 2 === 0;
     } else if (this.toast.phase === 'resting') {
-      const restartWaitingTime = restartPeriod * 3;
+      const restartWaitingTime = restartPeriod * 5;
       this.finishTimestamp = now + restartWaitingTime;
       setTimeout(() => {
         this.setMouseDownCallback(() => {
