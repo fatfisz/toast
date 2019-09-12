@@ -7,9 +7,9 @@ export const formText: ScoreText = {
   3: "the butter should always be on the top!\nat least it landed on the plate... that's 3 points.",
   4: 'that i had to witness such a poor form...\n4 points, no comment.',
   5: 'the form is all over the place!\n5 points and not a point more.',
-  6: "you're almost trying, but that won't take you too far.\n6 points.",
+  6: "you're almost trying, but that won't take you too far. 6 points.",
   7: 'mediocre form, but with a hint of something...\nmy intuition dictates 7 points.',
-  8: "that's a good form, but you could improve it here and there.\n8 points.",
+  8: "that's a good form, but you could improve it here and there. 8 points.",
   9: '9 points, you almost understand it!',
   10: 'splendid! the execution was full of finesse!\nmost deserving 10 points.',
 };
