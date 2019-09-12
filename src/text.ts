@@ -3,6 +3,7 @@ import getCanvas from './getCanvas';
 type Letters = { [char: string]: string };
 
 const letterHeight = 6;
+const letterSpacing = 1;
 const lineSpacing = 4;
 
 const letters: Letters = {
@@ -71,7 +72,7 @@ export function getTextImage(text: string, color: string, maxWidth = Infinity): 
         offset = 0;
       } else {
         drawLetter(context, offset, y, char);
-        offset += 1 + getLetterWidth(letters[char]);
+        offset += letterSpacing + getLetterWidth(letters[char]);
       }
     }
 
@@ -108,10 +109,13 @@ function getFittingText(text: string, width: number) {
   };
 }
 
-function getWidth(text: string) {
+function getWidth(text: string): number {
+  if (text === '') {
+    return 0;
+  }
   return [...text].reduce(
-    (pixelWidth, char) => pixelWidth + getLetterWidth(letters[char]),
-    text.length - 1,
+    (width, char) => width + getLetterWidth(letters[char]),
+    (text.length - 1) * letterSpacing,
   );
 }
 
