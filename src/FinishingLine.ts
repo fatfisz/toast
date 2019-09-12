@@ -37,7 +37,7 @@ export default class FinishingLine {
 
     let lastX = firstStop;
     for (const [x, color] of stops) {
-      display.rect(new Point(lastX, plateDepth), new Point(x, plateDepth + brickHeight), {
+      display.rect(new Point(lastX, plateDepth), new Point(x, plateDepth + brickHeight * 2), {
         fillStyle: color,
         globalAlpha: 0.4 + this.glowIntensity * 0.3,
       });
