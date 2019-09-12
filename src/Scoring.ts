@@ -50,7 +50,7 @@ export default class Scoring {
     this.drawWizardWithBubble(
       displaySize * 0.75,
       2,
-      "oh, young'uns these days!\nno appreciation for the form.\n\nwhat point is there to be precise if it looks plain\nawful in the end?",
+      "oh, young'uns these days! no appreciation for the form.\n\nwhat point is there to be precise if it looks plain awful in the end?",
     );
   }
 

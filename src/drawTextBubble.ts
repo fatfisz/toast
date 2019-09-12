@@ -1,11 +1,10 @@
 import { bubbleScale } from './consts';
 import drawBubble from './drawBubble';
 import { getColor } from './sprites';
-import { getTextImage, letterHeight } from './text';
+import { getTextImage } from './text';
 
 const paddingV = 5;
 const paddingH = 7;
-const lineSpacing = 4;
 const arrowSize = 6;
 const arrowOffset = Math.round((paddingV + arrowSize / 2) * bubbleScale);
 
@@ -17,10 +16,12 @@ export default function drawTextBubble(
   x2: number,
   arrow?: 'left' | 'right',
 ) {
-  const textImages = text.split('\n').map(line => getTextImage(line, getColor(0)));
-  const height =
-    2 * (1 + paddingV) * bubbleScale +
-    ((letterHeight + lineSpacing) * textImages.length - lineSpacing) * bubbleScale;
+  const textImage = getTextImage(
+    text,
+    getColor(0),
+    (x2 - x) / bubbleScale + 1 - 2 - 2 * paddingV - arrowSize / 2,
+  );
+  const height = (2 * (1 + paddingV) + textImage.height) * bubbleScale;
 
   drawBubble(
     context,
@@ -40,22 +41,13 @@ export default function drawTextBubble(
     );
   }
 
-  for (let index = 0; index < textImages.length; index += 1) {
-    const { width, height } = textImages[index];
-    const textX = x + (1 + paddingH) * bubbleScale;
-    const textY = y + (1 + paddingV + (letterHeight + lineSpacing) * index) * bubbleScale;
-    context.drawImage(
-      textImages[index],
-      0,
-      0,
-      width,
-      height,
-      textX,
-      textY,
-      width * bubbleScale,
-      height * bubbleScale,
-    );
-  }
+  context.drawImage(
+    textImage,
+    x + (1 + paddingH) * bubbleScale,
+    y + (1 + paddingV) * bubbleScale,
+    textImage.width * bubbleScale,
+    textImage.height * bubbleScale,
+  );
 }
 
 function drawArrow(context: CanvasRenderingContext2D, x: number, y: number, modX: number) {

@@ -2,7 +2,9 @@ import getCanvas from './getCanvas';
 
 type Letters = { [char: string]: string };
 
-export const letterHeight = 6;
+const letterHeight = 6;
+const lineSpacing = 4;
+
 const letters: Letters = {
   a: '.... ..... .. .   ',
   b: '.. . ... . ...    ',
@@ -40,6 +42,7 @@ const letters: Letters = {
   8: ' . . . . . . .    ',
   9: ' . . . ..  . .    ',
   0: ' . . .. .. . .    ',
+  // '\n': '',
   ' ': '            ',
   '.': '    . ',
   ',': '    ..',
@@ -49,32 +52,61 @@ const letters: Letters = {
   '?': '...  . .     .    ',
 };
 
-const imageCache = new Map<string, Map<string, HTMLCanvasElement>>();
+const imageCache = new Map<string, HTMLCanvasElement>();
 
-export function getTextImage(text: string, color: string): HTMLCanvasElement {
-  if (!imageCache.has(text)) {
-    imageCache.set(text, new Map());
-  }
+export function getTextImage(text: string, color: string, maxWidth = Infinity): HTMLCanvasElement {
+  const hash = `${text}%${color}%${maxWidth}`;
 
-  const textImageCache = imageCache.get(text) as Map<string, HTMLCanvasElement>;
-
-  if (!textImageCache.has(color)) {
-    const width = getWidth(text);
-    const [canvas, context] = getCanvas(width, letterHeight);
-    let offset = 0;
+  if (!imageCache.has(hash)) {
+    const { fittingText, width, height } = getFittingText(text, maxWidth);
+    const [canvas, context] = getCanvas(width, height);
 
     context.fillStyle = color;
     context.beginPath();
-    for (const char of text) {
-      drawLetter(context, offset, 0, char);
-      offset += 1 + getLetterWidth(letters[char]);
+
+    let y = 0;
+    let offset = 0;
+    for (const char of fittingText) {
+      if (char === '\n') {
+        y += letterHeight + lineSpacing;
+        offset = 0;
+      } else {
+        drawLetter(context, offset, y, char);
+        offset += 1 + getLetterWidth(letters[char]);
+      }
     }
+
     context.fill();
 
-    textImageCache.set(color, canvas);
+    imageCache.set(hash, canvas);
   }
 
-  return textImageCache.get(color) as HTMLCanvasElement;
+  return imageCache.get(hash) as HTMLCanvasElement;
+}
+
+function getFittingText(text: string, width: number) {
+  const lines = text.split('\n');
+  const fittingLines = [];
+
+  for (const line of lines) {
+    const [first, ...rest] = line.split(' ');
+    let currentLine = first;
+    for (const word of rest) {
+      if (getWidth(currentLine + ' ' + word) <= width) {
+        currentLine += ' ' + word;
+      } else {
+        fittingLines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    fittingLines.push(currentLine);
+  }
+
+  return {
+    fittingText: fittingLines.join('\n'),
+    width: Math.max(...fittingLines.map(getWidth)),
+    height: fittingLines.length * (letterHeight + lineSpacing) - lineSpacing,
+  };
 }
 
 function getWidth(text: string) {
