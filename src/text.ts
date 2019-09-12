@@ -66,7 +66,7 @@ export function getTextImage(
   if (!imageCache.has(hash)) {
     const { fittingText, width, height } = getFittingText(text, maxWidth);
     const [canvas, context] = getCanvas(width, height);
-    const imageData = context.getImageData(0, 0, width, height);
+    const imageData = context.createImageData(width, height);
     let y = 0;
     let offset = 0;
     for (const char of fittingText) {
