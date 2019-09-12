@@ -38,7 +38,7 @@ export default class Toast {
   dr: number;
   dx: number;
   dy: number;
-  lastPhase: boolean;
+  phase: 'falling' | 'hitting' | 'resting';
   mid: Point;
   r: number;
 
@@ -47,7 +47,7 @@ export default class Toast {
     this.dr = Math.sign(Math.random() - 0.5) * (Math.random() * 0.01 + 0.005);
     this.dx = Math.sign(Math.random() - 0.5) * (Math.random() * 0.05 + 0.025);
     this.dy = gravity;
-    this.lastPhase = false;
+    this.phase = 'falling';
     this.mid = new Point(x, y);
     this.r = 0;
 
@@ -75,7 +75,7 @@ export default class Toast {
       this.handleCollision(this.collisionPoint, dt);
     }
 
-    if (!this.lastPhase) {
+    if (this.phase === 'falling') {
       this.mid.x += this.dx * dt;
       this.mid.y += this.dy * dt;
       this.r += this.dr * dt;
@@ -144,11 +144,11 @@ export default class Toast {
   private handleCollision(collisionPoint: Point, dt: number, forceMove = false) {
     const relativeCollisionPoint = collisionPoint.sub(this.mid).wrap();
 
-    if (!this.lastPhase) {
+    if (this.phase === 'falling') {
       this.dx = 0;
       this.dy = 0;
       this.dr = toastInertia * -Math.sign(relativeCollisionPoint.x);
-      this.lastPhase = true;
+      this.phase = 'hitting';
     } else {
       const intersection = this.getIntersection(this.mid, new Point(this.mid.x, plateDepth + 1));
       if (intersection !== null) {
@@ -181,6 +181,7 @@ export default class Toast {
       if (Math.abs(this.dr) < finalPhaseRotationThreshold) {
         this.dr = 0;
         this.collisionPoint = new Point(this.mid.x, plateDepth);
+        this.phase = 'resting';
       }
 
       this.handleCollision(this.collisionPoint, dt - dtToRightAngle, true);

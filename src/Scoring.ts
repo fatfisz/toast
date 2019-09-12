@@ -1,4 +1,4 @@
-import { bubbleScale, displaySize, finishFreeFallDepth, imageScale } from './consts';
+import { bubbleScale, displaySize, imageScale } from './consts';
 import Display from './Display';
 import drawBubble from './drawBubble';
 import drawTextBubble from './drawTextBubble';
@@ -26,7 +26,7 @@ export default class Scoring {
   }
 
   tick(now: number, toast: Toast) {
-    if (!isFinite(this.showscoreTimestamp) && toast.mid.y > finishFreeFallDepth && toast.dr === 0) {
+    if (!isFinite(this.showscoreTimestamp) && toast.phase === 'resting') {
       this.showscoreTimestamp = now + 400;
       this.prerender();
     }
