@@ -27,6 +27,10 @@ function unfoldArray(data: number[]) {
   return unfoldedData;
 }
 
+function decodeString(data: string) {
+  return [...data].map(char => char.charCodeAt(0) - 32);
+}
+
 function getColorIndex({ data, size }: Part, x: number, y: number, z: number) {
   return data[x + y * size[0] + z * size[0] * size[1]];
 }
@@ -112,7 +116,11 @@ export function getColor(index: number) {
 
 function init() {
   for (const part of models.parts) {
-    part.data = unfoldArray(part.data);
+    if (process.env.NODE_ENV === 'production') {
+      part.data = decodeString((part.data as any) as string);
+    } else {
+      part.data = unfoldArray(part.data);
+    }
     partLayers.set(part.name, getCanvases((part as any) as Part, models.palette));
   }
 

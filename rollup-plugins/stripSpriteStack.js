@@ -71,7 +71,7 @@ function trimPart(part) {
   part.bounds[5] -= part.bounds[4];
   part.bounds[4] = 0;
 
-  part.data = foldArray(newData);
+  part.data = newData.map(color => String.fromCharCode(color + 32)).join('');
 }
 
 function unfoldArray(data) {
@@ -92,24 +92,4 @@ function unfoldArray(data) {
 
 function getColorIndex(data, x, y, z) {
   return data[x + y * size + z * size * size];
-}
-
-function foldArray(data) {
-  const foldedData = [data[0]];
-
-  for (let index = 1; index < data.length; index += 1) {
-    const { length } = foldedData;
-    if (data[index] === foldedData[length - 1]) {
-      if (length > 1 && foldedData[length - 2] < 0) {
-        foldedData[length - 2] -= 1;
-      } else {
-        foldedData[length - 1] = -2;
-        foldedData.push(data[index]);
-      }
-    } else {
-      foldedData.push(data[index]);
-    }
-  }
-
-  return foldedData;
 }
