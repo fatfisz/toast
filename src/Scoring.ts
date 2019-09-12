@@ -13,6 +13,7 @@ interface Scores {
   form: number;
   lenient: number;
   precision: number;
+  total: number;
   set: boolean;
 }
 
@@ -32,12 +33,7 @@ export default class Scoring {
   constructor() {
     [this.canvas, this.context] = getCanvas(displaySize, displaySize);
     this.opacity = 0;
-    this.scores = {
-      form: 0,
-      lenient: 0,
-      precision: 0,
-      set: false,
-    };
+    this.scores = { form: 0, lenient: 0, precision: 0, total: 0, set: false };
     this.showScoreTimestamp = Infinity;
   }
 
@@ -51,12 +47,11 @@ export default class Scoring {
   }
 
   private score(toast: Toast) {
-    this.scores = {
-      form: this.scoreForm(toast),
-      lenient: this.scoreLenient(toast),
-      precision: this.scorePrecision(toast),
-      set: true,
-    };
+    const form = this.scoreForm(toast);
+    const lenient = this.scoreLenient(toast);
+    const precision = this.scorePrecision(toast);
+    const total = Number(((form + lenient + precision) / 3).toFixed(1));
+    this.scores = { form, lenient, precision, total, set: true };
   }
 
   private scoreForm(toast: Toast) {
@@ -114,9 +109,18 @@ export default class Scoring {
       }
     }
 
-    this.drawWizardWithBubble(displaySize * 0.25, 0, precisionText[this.scores.precision]);
-    this.drawWizardWithBubble(displaySize * 0.5, 1, lenientText[this.scores.lenient], true);
-    this.drawWizardWithBubble(displaySize * 0.75, 2, formText[this.scores.form]);
+    this.drawWizardWithBubble(displaySize * 0.22, 0, precisionText[this.scores.precision]);
+    this.drawWizardWithBubble(displaySize * 0.44, 1, lenientText[this.scores.lenient], true);
+    this.drawWizardWithBubble(displaySize * 0.66, 2, formText[this.scores.form]);
+
+    drawTextBubble(
+      this.context,
+      `total score: ${this.scores.total}`,
+      displaySize * 0.25,
+      displaySize * 0.8,
+      displaySize * (1 - 0.25),
+      { center: true, scale: 6 },
+    );
   }
 
   private drawWizardWithBubble(y: number, wizardIndex: number, text: string, isRight?: boolean) {
@@ -128,7 +132,7 @@ export default class Scoring {
       isRight ? wizardOffset : wizardOffset + 2 * halfWizardBubbleSize,
       midY,
       isRight ? displaySize - wizardOffset - 2 * halfWizardBubbleSize : displaySize - wizardOffset,
-      isRight ? 'right' : 'left',
+      { arrow: isRight ? 'right' : 'left' },
     );
   }
 

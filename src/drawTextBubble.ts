@@ -8,26 +8,33 @@ const paddingH = 7;
 const arrowSize = 6;
 const arrowOffset = Math.round((paddingV + arrowSize / 2) * bubbleScale);
 
+interface TextBubbleOptions {
+  arrow?: 'left' | 'right';
+  center?: boolean;
+  scale?: number;
+}
+
 export default function drawTextBubble(
   context: CanvasRenderingContext2D,
   text: string,
   x: number,
   y: number,
   x2: number,
-  arrow?: 'left' | 'right',
+  { arrow, center, scale = bubbleScale }: TextBubbleOptions = {},
 ) {
+  const width = x2 - x;
   const textImage = getTextImage(
     text,
     getColorTuple(0),
-    (x2 - x) / bubbleScale + 1 - 2 - 2 * paddingV - arrowSize / 2,
+    width / scale + 1 - 2 - 2 * paddingV - arrowSize / 2,
   );
-  const height = (2 * (1 + paddingV) + textImage.height) * bubbleScale;
+  const height = (2 * (1 + paddingV) + textImage.height) * scale;
 
   drawBubble(
     context,
-    x + (arrow === 'left' ? (arrowSize / 2) * bubbleScale : 0),
+    x + (arrow === 'left' ? (arrowSize / 2) * scale : 0),
     y,
-    x2 - x - (arrow ? (arrowSize / 2) * bubbleScale : 0),
+    width - (arrow ? (arrowSize / 2) * scale : 0),
     height,
     getColor(6),
     getColor(0),
@@ -35,7 +42,7 @@ export default function drawTextBubble(
   if (arrow) {
     drawArrow(
       context,
-      arrow === 'left' ? x : x2 - bubbleScale,
+      arrow === 'left' ? x : x2 - scale,
       y + arrowOffset,
       arrow === 'left' ? 1 : -1,
     );
@@ -43,10 +50,10 @@ export default function drawTextBubble(
 
   context.drawImage(
     textImage,
-    x + (1 + paddingH) * bubbleScale,
-    y + (1 + paddingV) * bubbleScale,
-    textImage.width * bubbleScale,
-    textImage.height * bubbleScale,
+    x + (center ? Math.floor((width - textImage.width * scale) / 2) : (1 + paddingH) * scale),
+    y + (1 + paddingV) * scale,
+    textImage.width * scale,
+    textImage.height * scale,
   );
 }
 
