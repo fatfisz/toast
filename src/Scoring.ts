@@ -41,13 +41,13 @@ export default class Scoring {
 
   tick(now: number, toast: Toast) {
     if (!isFinite(this.showScoreTimestamp) && toast.phase === 'resting') {
+      this.showScoreTimestamp = now + 400;
       this.showScore(now, toast);
     }
     this.opacity = Math.min(Math.max((now - this.showScoreTimestamp) / 400, 0), 1);
   }
 
   private showScore(now: number, toast: Toast) {
-    this.showScoreTimestamp = now + 400;
     this.calculateScore(toast);
     this.prerender();
     if (this.highscore < this.scores.total) {

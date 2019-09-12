@@ -201,7 +201,7 @@ export default class Toast {
   }
 
   tryApplyForce(forceVector: [Point, Point] | null) {
-    if (forceVector === null || this.mid.y >= finishDepth) {
+    if (forceVector === null || !this.canApplyForce()) {
       return null;
     }
 
@@ -224,6 +224,10 @@ export default class Toast {
     this.hits += 1;
 
     return intersectionPoint;
+  }
+
+  canApplyForce() {
+    return this.mid.y < finishDepth;
   }
 
   private getIntersection(firstPoint: Point, lastPoint: Point) {

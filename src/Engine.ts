@@ -20,6 +20,7 @@ interface Drawable {
 const fadeDuration = 400;
 const darkDuration = 100;
 const fadeAndDarkDuration = fadeDuration + darkDuration;
+const restartPeriod = 800;
 const cameraOffset = displaySize / 15;
 const cameraEnd = plateDepth - displaySize / 2 + 20 * imageScale;
 const infoPadding = 30;
@@ -28,12 +29,14 @@ export default class Engine {
   display: Display;
   drawables!: Drawable[];
   finishingLine!: FinishingLine;
+  finishTimestamp!: number;
   mouse: Mouse;
   needToInit: boolean;
   now: number;
   overlayOpacity: number;
   resetTimestamp: number;
   scoring!: Scoring;
+  showRestartText!: boolean;
   toast!: Toast;
   wizard!: Wizard;
 
@@ -53,13 +56,11 @@ export default class Engine {
     this.init();
   }
 
-  reset() {
-    this.resetTimestamp = this.now;
-    this.needToInit = true;
-  }
-
   init() {
     this.display.resetCameraPosition();
+    this.finishTimestamp = Infinity;
+    this.showRestartText = false;
+
     this.toast = new Toast();
     this.finishingLine = new FinishingLine();
     this.wizard = new Wizard();
@@ -84,7 +85,26 @@ export default class Engine {
     this.scoring.tick(now, this.toast);
     this.display.setCameraPosition(this.getNextCameraPosition());
     this.mouse.tick(now, dt, this.display.getOffset(), this.toast);
-    this.wizard.tick(now, this.mouse.pressed);
+    this.wizard.tick(now, this.toast.canApplyForce() && this.mouse.pressed);
+
+    if (isFinite(this.finishTimestamp)) {
+      this.showRestartText =
+        now >= this.finishTimestamp &&
+        Math.floor((now - this.finishTimestamp) / restartPeriod) % 2 === 0;
+    } else if (this.toast.phase === 'resting') {
+      const restartWaitingTime = restartPeriod * 3;
+      this.finishTimestamp = now + restartWaitingTime;
+      setTimeout(() => {
+        this.setMouseDownCallback(() => {
+          this.reset();
+        });
+      }, restartWaitingTime);
+    }
+  }
+
+  private reset() {
+    this.resetTimestamp = this.now;
+    this.needToInit = true;
   }
 
   private resetTick() {
@@ -160,5 +180,26 @@ export default class Engine {
       displaySize - infoPadding,
       { right: true },
     );
+
+    if (this.showRestartText) {
+      drawText(
+        this.display.context,
+        'click to restart',
+        getColorTuple(6),
+        infoPadding,
+        infoPadding,
+        displaySize - infoPadding,
+        { center: true, scale: 6 },
+      );
+    }
+  }
+
+  private setMouseDownCallback(callback: () => void) {
+    function mouseDownHandler() {
+      window.removeEventListener('mousedown', mouseDownHandler);
+      callback();
+    }
+
+    window.addEventListener('mousedown', mouseDownHandler);
   }
 }
