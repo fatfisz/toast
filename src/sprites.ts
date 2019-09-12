@@ -1,7 +1,9 @@
+import { getColorTuple, putColorFromPalette } from './colors';
 import getCanvas from './getCanvas';
 import models from './model.json';
 
 type Size = [number, number];
+export type ColorTuple = [number, number, number];
 type Bounds2d = [number, number, number, number];
 type Bounds3d = [number, number, number, number, number, number];
 interface Part {
@@ -10,6 +12,10 @@ interface Part {
   size: Size;
 }
 type Layers = (HTMLCanvasElement | undefined)[];
+
+function decodeString(data: string) {
+  return [...data].map(char => char.charCodeAt(0) - 32);
+}
 
 function unfoldArray(data: number[]) {
   const unfoldedData: number[] = [];
@@ -27,52 +33,21 @@ function unfoldArray(data: number[]) {
   return unfoldedData;
 }
 
-function decodeString(data: string) {
-  return [...data].map(char => char.charCodeAt(0) - 32);
-}
-
 function getColorIndex({ data, size }: Part, x: number, y: number, z: number) {
   return data[x + y * size[0] + z * size[0] * size[1]];
 }
 
-function unpackColor(colorNumber: number) {
-  return [(colorNumber >> 16) % 256, (colorNumber >> 8) % 256, colorNumber % 256];
-}
-
-function channelsToString(channels: number[]) {
-  return `rgb(${channels[0]}, ${channels[1]}, ${channels[2]})`;
-}
-
-function putColorFromPalette(
-  data: Uint8ClampedArray,
-  index: number,
-  palette: number[],
-  colorIndex: number,
-) {
-  if (colorIndex === 0) {
-    return;
-  }
-
-  const [r, g, b] = unpackColor(palette[colorIndex - 1]);
-  data[index] = r;
-  data[index + 1] = g;
-  data[index + 2] = b;
-  data[index + 3] = 255;
-}
-
-function getCanvasForLayer(part: Part, bounds: Bounds2d, layer: number, palette: number[]) {
+function getCanvasForLayer(part: Part, bounds: Bounds2d, layer: number) {
   const [width, height] = part.size;
   const [canvas, context] = getCanvas(bounds[1] - bounds[0] + 1, bounds[3] - bounds[2] + 1);
   const imageData = context.createImageData(width, height);
 
   for (let x = bounds[0]; x <= bounds[1]; x += 1) {
     for (let y = bounds[2]; y <= bounds[3]; y += 1) {
-      putColorFromPalette(
-        imageData.data,
-        (x + y * width) * 4,
-        palette,
-        getColorIndex(part, x, y, layer),
-      );
+      const colorIndex = getColorIndex(part, x, y, layer);
+      if (colorIndex !== 0) {
+        putColorFromPalette(imageData.data, (x + y * width) * 4, getColorTuple(colorIndex - 1));
+      }
     }
   }
 
@@ -81,12 +56,12 @@ function getCanvasForLayer(part: Part, bounds: Bounds2d, layer: number, palette:
   return canvas;
 }
 
-function getCanvases(part: Part, palette: number[]) {
+function getCanvases(part: Part) {
   const layers: Layers = [];
   const { bounds } = part;
 
   for (let layer = bounds[4]; layer <= bounds[5]; layer += 1) {
-    layers[layer] = getCanvasForLayer(part, (bounds as any) as Bounds2d, layer, palette);
+    layers[layer] = getCanvasForLayer(part, (bounds as any) as Bounds2d, layer);
   }
 
   return layers;
@@ -108,12 +83,6 @@ export function getModel(name: string, layer = 0) {
   return canvas as HTMLCanvasElement;
 }
 
-const palette: string[] = [];
-
-export function getColor(index: number) {
-  return palette[index];
-}
-
 function init() {
   for (const part of models.parts) {
     if (process.env.NODE_ENV === 'production') {
@@ -121,11 +90,7 @@ function init() {
     } else {
       part.data = unfoldArray(part.data);
     }
-    partLayers.set(part.name, getCanvases((part as any) as Part, models.palette));
-  }
-
-  for (const color of models.palette) {
-    palette.push(channelsToString(unpackColor(color)));
+    partLayers.set(part.name, getCanvases((part as any) as Part));
   }
 }
 

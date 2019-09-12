@@ -1,9 +1,10 @@
+import { getColor } from './colors';
 import { displaySize, imageScale, plateDepth, plateWidth, toastWidth } from './consts';
 import Display from './Display';
 import drawBricks from './drawBricks';
 import Point from './Point';
 import roundToSteps from './roundToSteps';
-import { getColor, getModel } from './sprites';
+import { getModel } from './sprites';
 
 const glowPeriod = 1500;
 const brickHeight = getModel('brick').height * imageScale;

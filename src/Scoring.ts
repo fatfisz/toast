@@ -1,3 +1,4 @@
+import { getColor } from './colors';
 import { bubbleScale, displaySize, imageScale } from './consts';
 import Display from './Display';
 import drawBubble from './drawBubble';
@@ -5,7 +6,7 @@ import drawTextBubble from './drawTextBubble';
 import getCanvas from './getCanvas';
 import Point from './Point';
 import { formText, lenientText, precisionText } from './scoreTexts';
-import { getColor, getModel } from './sprites';
+import { getModel } from './sprites';
 import Toast from './Toast';
 
 interface Scores {

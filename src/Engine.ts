@@ -1,4 +1,5 @@
 import AirFlow from './AirFlow';
+import { getColor } from './colors';
 import { displaySize, finishDepth, finishFreeFallDepth, imageScale, plateDepth } from './consts';
 import Display from './Display';
 import drawBackground from './drawBackground';
@@ -8,7 +9,6 @@ import Mouse from './Mouse';
 import roundToSteps from './roundToSteps';
 import Point from './Point';
 import Scoring from './Scoring';
-import { getColor } from './sprites';
 import Toast from './Toast';
 import Wizard from './Wizard';
 

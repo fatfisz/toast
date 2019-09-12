@@ -1,6 +1,6 @@
+import { getColor, getColorTuple } from './colors';
 import { bubbleScale } from './consts';
 import drawBubble from './drawBubble';
-import { getColor } from './sprites';
 import { getTextImage } from './text';
 
 const paddingV = 5;
@@ -18,7 +18,7 @@ export default function drawTextBubble(
 ) {
   const textImage = getTextImage(
     text,
-    getColor(0),
+    getColorTuple(0),
     (x2 - x) / bubbleScale + 1 - 2 - 2 * paddingV - arrowSize / 2,
   );
   const height = (2 * (1 + paddingV) + textImage.height) * bubbleScale;

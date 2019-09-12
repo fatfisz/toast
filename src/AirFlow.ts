@@ -1,7 +1,7 @@
+import { getColor } from './colors';
 import { displaySize } from './consts';
 import Display from './Display';
 import Point from './Point';
-import { getColor } from './sprites';
 
 const width = 1;
 const height = 40;

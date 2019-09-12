@@ -1,8 +1,9 @@
+import { getColor } from './colors';
 import { displaySize } from './consts';
 import Display from './Display';
 import drawPillars from './drawPillars';
 import Point from './Point';
-import { getColor, getModel } from './sprites';
+import { getModel } from './sprites';
 
 const skyTopLeft = new Point(0, 0);
 const skyBottomRight = new Point(displaySize, displaySize);
