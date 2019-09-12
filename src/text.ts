@@ -1,6 +1,5 @@
-import { putColorFromPalette } from './colors';
+import { ColorTuple, putColorFromPalette } from './colors';
 import getCanvas from './getCanvas';
-import { ColorTuple } from './sprites';
 
 type Letters = { [char: string]: string };
 
@@ -35,7 +34,7 @@ const letters: Letters = {
   x: '. .. . . . .. .   ',
   y: '. .. .... .  .    ',
   z: '...  . . .  ...   ',
-  1: ' ... . . .  ',
+  1: ' . ..  .  .  .    ',
   2: '..   . . .  ...   ',
   3: '..   . .   ...    ',
   4: '.  .  . ....  .   ',
@@ -52,6 +51,7 @@ const letters: Letters = {
   '!': '... . ',
   ':': ' . .  ',
   '?': '...  . .     .    ',
+  '%': '. .  . . .  . .   ',
 };
 
 const imageCache = new Map<string, HTMLCanvasElement>();

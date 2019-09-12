@@ -17,12 +17,16 @@ type DrawOptions = CanvasRenderingContext2D & TransformationOptions;
 
 const mid = new Point(displaySize / 2, displaySize / 2);
 
-const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions = {
-  absolute: false,
+const defaultContextOptions: Partial<CanvasRenderingContext2D> = {
   globalAlpha: 1,
-  imageScale,
   lineJoin: 'round',
   lineWidth: 3,
+};
+
+const defaultOptions: Partial<CanvasRenderingContext2D> & TransformationOptions = {
+  ...defaultContextOptions,
+  absolute: false,
+  imageScale,
   r: 0,
   z: 1,
 };
@@ -136,6 +140,10 @@ export default class Display {
       centerX * (1 - cos) + centerY * sin,
       centerY * (1 - cos) - centerX * sin,
     );
+  }
+
+  reset() {
+    Object.assign(this.context, defaultContextOptions);
   }
 
   clear() {

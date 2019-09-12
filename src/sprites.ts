@@ -3,7 +3,6 @@ import getCanvas from './getCanvas';
 import models from './model.json';
 
 type Size = [number, number];
-export type ColorTuple = [number, number, number];
 type Bounds2d = [number, number, number, number];
 type Bounds3d = [number, number, number, number, number, number];
 interface Part {

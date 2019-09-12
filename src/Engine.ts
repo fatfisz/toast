@@ -1,8 +1,9 @@
 import AirFlow from './AirFlow';
-import { getColor } from './colors';
+import { getColor, getColorTuple } from './colors';
 import { displaySize, finishDepth, finishFreeFallDepth, imageScale, plateDepth } from './consts';
 import Display from './Display';
 import drawBackground from './drawBackground';
+import drawText from './drawText';
 import FinishingLine from './FinishingLine';
 import { withGui } from './gui';
 import Mouse from './Mouse';
@@ -21,6 +22,7 @@ const darkDuration = 100;
 const fadeAndDarkDuration = fadeDuration + darkDuration;
 const cameraOffset = displaySize / 15;
 const cameraEnd = plateDepth - displaySize / 2 + 20 * imageScale;
+const infoPadding = 30;
 
 export default class Engine {
   display: Display;
@@ -125,6 +127,8 @@ export default class Engine {
       drawable.draw(this.display);
     }
 
+    this.drawInfo();
+
     if (this.overlayOpacity > 0) {
       this.display.rect(new Point(0, 0), new Point(displaySize, displaySize), {
         absolute: true,
@@ -132,5 +136,29 @@ export default class Engine {
         globalAlpha: this.overlayOpacity,
       });
     }
+  }
+
+  private drawInfo() {
+    this.display.reset();
+
+    const distance = Math.round(Math.min(Math.max(this.toast.mid.y / finishDepth, 0), 1) * 100);
+    drawText(
+      this.display.context,
+      `distance: ${distance}%`,
+      getColorTuple(6),
+      infoPadding,
+      infoPadding,
+      displaySize - infoPadding,
+    );
+
+    drawText(
+      this.display.context,
+      'highscore: 0',
+      getColorTuple(6),
+      infoPadding,
+      infoPadding,
+      displaySize - infoPadding,
+      { right: true },
+    );
   }
 }
