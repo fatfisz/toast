@@ -6,7 +6,7 @@ import Mouse from './Mouse';
 const maxFrameDuration = 20;
 
 export default function startGameLoop(display: Display, mouse: Mouse) {
-  const engine = new Engine(display, mouse);
+  let engine: Engine;
   let lastNow = 0;
   let skipFrame = true;
 
@@ -22,9 +22,12 @@ export default function startGameLoop(display: Display, mouse: Mouse) {
       return;
     }
 
+    if (!engine) {
+      engine = new Engine(display, mouse, now);
+    }
     display.clear();
-    engine.tick(now, dt);
     engine.draw();
+    engine.tick(now, dt);
   }
 
   requestAnimationFrame(draw);
