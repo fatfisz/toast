@@ -131,7 +131,7 @@ export default class Engine {
     }
     this.overlayTick();
     if (this.phase === 'intro') {
-      this.overlayOpacity = this.overlayOpacity * 0.4 + 0.6;
+      this.overlayOpacity = this.overlayOpacity * 0.25 + 0.75;
     }
 
     this.display.setCameraPosition(
