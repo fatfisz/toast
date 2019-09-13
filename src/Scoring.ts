@@ -96,7 +96,7 @@ export default class Scoring {
     }
     const lowScoreThreshold = -0.2;
     if (normalizedScore < lowScoreThreshold) {
-      return Math.random() < 0.2 ? 5 : 1;
+      return Math.random() < 0.5 ? 5 : 1;
     }
     const rescaledScore = (normalizedScore - lowScoreThreshold) / (1 - lowScoreThreshold);
     return Math.max(Math.ceil(rescaledScore * 3.5), 1) + 6;

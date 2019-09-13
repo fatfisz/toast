@@ -38,7 +38,7 @@ const cameraEnd = plateDepth - displaySize / 2 + 20 * imageScale;
 const infoPadding = 30;
 
 const instructions = [
-  'click and drag to cast magick on a spinning toast!',
+  'click or point and drag to cast magick on a spinning slice of toast!',
   '',
   'the bigger the move, the more force you will unleash!',
   '',
