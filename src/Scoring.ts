@@ -123,9 +123,21 @@ export default class Scoring {
       }
     }
 
-    this.drawWizardWithBubble(displaySize * 0.22, 0, precisionText[this.scores.precision]);
-    this.drawWizardWithBubble(displaySize * 0.44, 1, lenientText[this.scores.lenient], true);
-    this.drawWizardWithBubble(displaySize * 0.66, 2, formText[this.scores.form]);
+    const pairs: [number, string][] = [
+      [0, precisionText[this.scores.precision]],
+      [1, lenientText[this.scores.lenient]],
+      [2, formText[this.scores.form]],
+    ];
+    for (let index = 0; index < 3; index += 1) {
+      const randomIndex = Math.floor(Math.random() * pairs.length);
+      const [[wizardIndex, wizardText]] = pairs.splice(randomIndex, 1);
+      this.drawWizardWithBubble(
+        displaySize * 0.22 * (index + 1),
+        wizardIndex,
+        wizardText,
+        index % 2 === 1,
+      );
+    }
 
     const scoreText = this.scores.total > this.highscore ? `new highscore` : 'total score';
     drawTextBubble(
